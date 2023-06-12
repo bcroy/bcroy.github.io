@@ -3,12 +3,30 @@ layout: post
 title:  "Mele RDP"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
-use_math: true
 ---
 
-The paper _SPECTRAL ESTIMATION OF LARGE STOCHASTIC BLOCKMODELS WITH DISCRETE NODAL COVARIATES_, by ANGELO MELE, LINGXIN HAO, JOSHUA CAPE, AND CAREY E. PRIEBE, shows how to incorporate node-level covariates into stochastic block models as represented by random dot product graphs (RDPGs).
+The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Caarey E. Priebe, shows how to incorporate node-level covariates into stochastic block models as represented by random dot product graphs (RDPGs).
 
-The basic setup is to take an RDP, which represents nodes as vectors in $d$ dimensional space...
+To begin, consider a network characterized only by a single block, and nodes having an observable binary covariate. Let the block latent position be represented with a $$d$$-dimensional embedding $$X$$. Following Mele et. al., the likelihood of an edge between nodes $$i$$ and $$j$$ depends on the inner product of their embedding vectors, with an additive component of $$\beta$$ when the covariate values are the same. Supposing binary covariate labels $$M$$ and $$F$$, in the Mele et. al. setup we have the likelihood of an edge between a pair of nodes as a function of:
+\\(MM: XX + \beta\\), \\(MF: XX\\), \\(FF: XX + \beta\\), depending on the covariates.
 
 
-[text] \\(x + y\\) [text]
+Now, let's see if we can transform into a new space, where the covariate corresponds to an offset of the node embedding.
+
+For $$X$$ and $$\beta$$, would like to find $$Y$$, $$a$$ and $$b$$ such that
+
+MM: $$X^TX + \beta   = (Y+a)^T(Y+a)$$\\
+MF: $$X^TX = (Y+a)^T(Y+b)$$\\
+FF: $$X^TX + \beta   = (Y+a)^T(Y+a)$$
+
+
+We begin by expanding and combining the first and third equation. For the moment, I'm going to dispense with the transpose symbols.
+
+$$2Ya + aa = 2Yb + bb$$\\
+$$2Y(a-b) + aa - bb = 0$$\\
+$$2Y(a-b) = ||b||^2 - ||a||^2$$
+
+
+
+
+
