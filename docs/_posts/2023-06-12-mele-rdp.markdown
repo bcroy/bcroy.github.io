@@ -4,7 +4,6 @@ title:  "Mele RDP"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
 use_math: true
-mathjax: true
 ---
 
 The paper _SPECTRAL ESTIMATION OF LARGE STOCHASTIC BLOCKMODELS WITH DISCRETE NODAL COVARIATES_, by ANGELO MELE, LINGXIN HAO, JOSHUA CAPE, AND CAREY E. PRIEBE, shows how to incorporate node-level covariates into stochastic block models as represented by random dot product graphs (RDPGs).
