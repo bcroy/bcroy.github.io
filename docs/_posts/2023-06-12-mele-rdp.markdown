@@ -5,28 +5,39 @@ date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
 ---
 
-The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Caarey E. Priebe, shows how to incorporate node-level covariates into stochastic block models as represented by random dot product graphs (RDPGs).
+The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Carey E. Priebe, shows how to incorporate node-level covariates into stochastic block models (SBMs) as represented by random dot product graphs (RDPGs).
 
-To begin, consider a network characterized only by a single block, and nodes having an observable binary covariate. Let the block latent position be represented with a $$d$$-dimensional embedding $$X$$. Following Mele et. al., the likelihood of an edge between nodes $$i$$ and $$j$$ depends on the inner product of their embedding vectors, with an additive component of $$\beta$$ when the covariate values are the same. Supposing binary covariate labels $$M$$ and $$F$$, in the Mele et. al. setup we have the likelihood of an edge between a pair of nodes as a function of:
-\\(MM: XX + \beta\\), \\(MF: XX\\), \\(FF: XX + \beta\\), depending on the covariates.
+To begin, consider an SBM network with a single block, and nodes having an observable binary covariate. Note that an SBM network with a single block is an Erdos-Renyi random graph with parameter $$p$$ governing the probability of an edge between a pair of nodes. Using the RDPG formalism for an SBM, a node $$i$$ in block $$b$$ is represented by a $$d$$-dimensional latent position vector $$X_b$$ associated with the block, such that $$p=\langle X,X \rangle$$. In the typical case of an SBM with multiple blocks, the RDP formulation characterizes each block $$b_i$$ by a latent position vector $$X_{b_i}$$, such that the likelihood of an edge between nodes $$i$$ and $$j$$ is $$p_{ij} = \langle X_{b_i}, X_{b_j} \rangle$$.
 
+In Mele et. al., the likelihood of an edge between nodes $$i$$ and $$j$$ further depends on observable _covariates_ associated with the nodes. Mele et. al. begin with a simple node-level binary covariate -- if a pair of nodes have the same value of the covariate, then the likelihood of an edge is boosted by a function of a parameter $$\beta$$. More formally, $$p_{ij} = h\left(\langle X_i, X_j \rangle + 1_{\mathrm{same}}(\beta)\right)$$. Here, $$h$$ is simply a function that ensures $$p_{ij}$$ will be a valid probability.
 
-Now, let's see if we can transform into a new space, where the covariate corresponds to an offset of the node embedding.
+To make this more concrete, consider binary node-level covariate labels __M__ and __F__, again with a single block represented by latent position vector $$X$$. In the Mele et. al. setup we have:\\
+__MM__: $$p_{ij} = h\left(\langle X X \rangle + \beta\right)$$\\
+__MF__: $$p_{ij} = h\left(\langle X X \rangle\right)$$\\
+__FF__: $$p_{ij} = h\left(\langle X X \rangle + \beta\right)$$
 
-For $$X$$ and $$\beta$$, would like to find $$Y$$, $$a$$ and $$b$$ such that
+We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In other words, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:\\
+__MM__: $$\langle XX \rangle + \beta   = \langle (Y+a),(Y+a)\rangle$$\\
+__MF__: $$\langle XX \rangle = \langle (Y+a),(Y+b)\rangle$$\\
+__FF__: $$\langle XX \rangle + \beta   = \langle (Y+b),(Y+b)\rangle$$
 
-MM: $$X^TX + \beta   = (Y+a)^T(Y+a)$$\\
-MF: $$X^TX = (Y+a)^T(Y+b)$$\\
-FF: $$X^TX + \beta   = (Y+a)^T(Y+a)$$
-
-
-We begin by expanding and combining the first and third equation. For the moment, I'm going to dispense with the transpose symbols.
-
+We begin by expanding and combining the first and third equation. To simplify the notation a bit, we dispense with $$\langle Y,Y \rangle$$ and instead simply write as $$YY$$.\\
 $$2Ya + aa = 2Yb + bb$$\\
 $$2Y(a-b) + aa - bb = 0$$\\
 $$2Y(a-b) = ||b||^2 - ||a||^2$$
 
+Next, we observe that the first and second (or the third and second) equations can be combined as follows:\\
+$$YY + 2Ya + aa = YY + Ya + Yb + ab + \beta$$\\
+$$Ya + aa = Yb + ab + \beta$$\\
+$$Ya - Yb + aa - ab = \beta$$\\
+$$(Y + a)(a - b) = \beta$$
 
-
+Finally, we can also rewrite the last equation above as:\\
+$$Y(a-b) + a(a-b) = \beta$$
+which permits substituting as follows:\\
+$$\frac{||b||^2 - ||a||^2}{2} + aa - ab = \beta$$\\
+$$bb - aa + 2aa - 2ab = 2\beta$$\\
+$$bb+aa - 2ab = 2\beta$$\\
+$$||a-b||^2 = 2\beta$$
 
 
