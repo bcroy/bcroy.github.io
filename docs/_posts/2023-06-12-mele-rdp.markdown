@@ -80,6 +80,9 @@ $$r = -q \pm \sqrt{q^2 + \frac{\beta}{2}}$$
 As a simple example, suppose that $$q = .5$$ (which in our SBM would lead to edge probability of $$p = q^2 = .25$$.) Then the above equation becomes\\
 $$r = -\frac{1}{2} \pm \sqrt{\frac{1}{4} + \frac{\beta}{2}}$$
 
+__Now... there is something missing still...__
+In particular, only one of the pair of solutions in the quadratic formula yields a result that works for the original three expressions (eg $$XX+ \beta = (Y+a)(Y+a)$$.) For my example, it turns out that it's for the solutions where the rhs of the quadratic is added (rather than subtracted.) In the case where it's subtracted, the solution still satisfies the constraints that I derived... but something went missing along the way, perhaps something that says that the inner product of $$Y$$ and $$a$$ (or $$b$$) should be positive. Or maybe it's that $$Y$$ and $$Y+a$$ should still be generally pointing in the same direction. So, should work through this...
+
 __I think there are some mistakes in the quadratic solution below__
 
 $$r^2 + r - \frac{\beta}{2} = 0$$ which we can solve using the quadratic formula to obtain\\
