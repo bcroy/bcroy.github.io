@@ -72,9 +72,18 @@ $$q^2 + \beta = q^2 + 2qr + r^2 + s^2$$\\
 $$\beta = 2qr + r^2 + \frac{\beta}{2}$$\\
 $$r^2 + 2qr - \frac{\beta}{2} = 0$$
 
+Using the quadratic formula $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$, we have\\
+$$r = \frac{-2q \pm \sqrt{\left(2q\right)^2 + 4\frac{\beta}{2}}}{2}$$\\
+$$r = \frac{-2q \pm \sqrt{4q^2 + 4\frac{\beta}{2}}}{2}$$\\
+$$r = -q \pm \sqrt{q^2 + \frac{\beta}{2}}$$
+
 As a simple example, suppose that $$q = .5$$ (which in our SBM would lead to edge probability of $$p = q^2 = .25$$.) Then the above equation becomes\\
+$$r = -\frac{1}{2} \pm \sqrt{\frac{1}{4} + \frac{\beta}{2}}$$
+
+__I think there are some mistakes in the quadratic solution below__
+
 $$r^2 + r - \frac{\beta}{2} = 0$$ which we can solve using the quadratic formula to obtain\\
-$$r = \frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}$$
+$$r = -\frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}$$
 
 
 So, with $$q = .5$$, the cloud of points for __M__ and __F__ covariates would be offset by $$a = \left[\frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}, \sqrt{\frac{\beta}{2}}\right]$$ and 
@@ -91,10 +100,26 @@ Not to lose sight of the bigger picture, there are additional questions:
 
 
 #### Simplifying assumption: $$b = \vec{0}$$
-Then $$a$$ is a vector with squared norm $$\|a\|^2 = 2\beta$$.
+In the general case derivations above we showed that $$\|a-b\|^2 = 2\beta$$. With the assumption that $$b = \vec{0}$$, then $$a$$ is a vector with squared norm $$\|a\|^2 = 2\beta$$.
 
 Also, using $$(Y + a)(a - b) = \beta$$ from above and substituting $$b = \vec{0}$$ we have that $$Ya + aa = \beta$$ which simplifies to $$Ya = -\beta$$.
 
- Suppose that $$Y = \left[q,0\right]$$, and that $$a = \left[r,s\right]$$, and $$b = \left[0,0\right]$$ as discussed above. So, plugging in to $$Ya = -\beta$$ we have that $$qr = -\beta$$, and $$r = -\frac{\beta}{q}$$.
+From the one dimensional example described above, we suppose that $$Y = \left[q,0\right]$$, and that $$a = \left[r,s\right]$$, and $$b = \left[0,0\right]$$. So, plugging in to $$Ya = -\beta$$ we have that $$qr = -\beta$$, and $$r = -\frac{\beta}{q}$$.
 
- __Note: didn't finish this part__
+Since $$\|a\|^2 = 2\beta$$, then $$aa = 2\beta$$, implying that $$r^2 + s^2 = 2\beta$$. This simplifies to $$s = \sqrt{2\beta - r^2}$$. Plugging in $$r = -\frac{\beta}{q}$$ we get that\\
+$$s = \sqrt{2\beta - \frac{\beta^2}{q^2}}$$\\
+$$s = \sqrt{\frac{1}{q^2} \left[2\beta q^2 - \beta^2\right]}$$\\
+$$s = \frac{1}{q} \sqrt{2\beta q^2 - \beta^2}$$\\
+$$s = \frac{1}{q} \sqrt{\beta\left(2q^2 - \beta\right)}$$
+
+Working again with the above example with $$q=.5$$, we get that $$r=-2\beta$$ and $$s = 2\sqrt{\frac{1}{2}\beta - \beta^2}$$
+
+This yields $$a = \left[-2\beta, 2\sqrt{\frac{1}{2}\beta - \beta^2}\right]$$
+
+
+
+ __Note: didn't finish this part... have to double check signs also, maybe a bug...__
+
+## To do
+- Number / label the equations
+- Visualizations
