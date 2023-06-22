@@ -1,0 +1,192 @@
+---
+layout: post
+title:  "Mele RDP"
+date:   2023-06-12 12:58:00 -0500
+categories: RDPGs
+---
+
+_Note - this is all still under development_
+
+# Introduction
+
+The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Carey E. Priebe, shows how to incorporate node-level covariates into stochastic block models (SBMs) as represented by random dot product graphs (RDPGs).
+
+To begin, consider an SBM network with a single block, and nodes having an observable binary covariate. Note that an SBM network with a single block is an Erdos-Renyi random graph with parameter $$p$$ governing the probability of an edge between a pair of nodes. Using the RDPG formalism for an SBM, a node $$i$$ in block $$b$$ is represented by a $$d$$-dimensional latent position vector $$X_b$$ associated with the block, such that $$p=\langle X,X \rangle$$. In the typical case of an SBM with multiple blocks, the RDP formulation characterizes each block $$b$$ by a latent position vector $$X_{b}$$. The probability of an edge between nodes $$i$$ and $$j$$, which are members of blocks $$b_i$$ and $$b_j$$ respectively, is thus $$p_{ij} = \langle X_{b_i}, X_{b_j} \rangle$$.
+
+In Mele et. al., the likelihood of an edge between nodes $$i$$ and $$j$$ further depends on observable _covariates_ associated with the nodes. Mele et. al. begin with a simple node-level binary covariate -- if a pair of nodes have the same value of the covariate, then the likelihood of an edge is boosted by a function of a parameter $$\beta$$. More formally, $$p_{ij} = h\left(\langle X_i, X_j \rangle + 1_{\mathrm{same}}(\beta)\right)$$. Here, $$h$$ is simply a function that ensures $$p_{ij}$$ will be a valid probability.
+
+To make this more concrete, consider binary node-level covariate labels __M__ and __F__, again with a single block represented by latent position vector $$X$$. In the Mele et. al. setup we have:\\
+__MM__: $$p_{ij} = h\left(\langle X,X \rangle + \beta\right)$$\\
+__MF__: $$p_{ij} = h\left(\langle X,X \rangle\right)$$\\
+__FF__: $$p_{ij} = h\left(\langle X,X \rangle + \beta\right)$$
+
+# New idea -- covariates as offsets in embedding space
+
+We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In other words, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:\\
+__MM__: $$\langle X,X \rangle + \beta   = \langle Y+a, Y+a\rangle$$\\
+__MF__: $$\langle X,X \rangle = \langle Y+a, Y+b\rangle$$\\
+__FF__: $$\langle X,X \rangle + \beta   = \langle Y+b, Y+b\rangle$$
+
+We begin by expanding and combining the first and third equation. To simplify the notation a bit we dispense with inner product notation and instead write, for example, $$\langle Y,Y \rangle$$ as $$YY$$.\\
+$$2Ya + aa = 2Yb + bb$$\\
+$$2Y(a-b) + aa - bb = 0$$\\
+$$2Y(a-b) = \|b\|^2 - \|a\|^2$$
+
+Next, we observe that the first and second (or the third and second) equations can be combined as follows:\\
+$$YY + 2Ya + aa = YY + Ya + Yb + ab + \beta$$\\
+$$Ya + aa = Yb + ab + \beta$$\\
+$$Ya - Yb + aa - ab = \beta$$\\
+$$(Y + a)(a - b) = \beta$$
+
+Finally, we can also rewrite the last equation above as:\\
+$$Y(a-b) + a(a-b) = \beta$$
+which permits substituting as follows:\\
+$$\frac{\|b\|^2 - \|a\|^2}{2} + aa - ab = \beta$$\\
+$$bb - aa + 2aa - 2ab = 2\beta$$\\
+$$bb+aa - 2ab = 2\beta$$\\
+$$\|a-b\|^2 = 2\beta$$
+
+Note that these equations provide some constraints on $$Y$$, $$a$$ and $$b$$. We can now explore how to transform from $$X$$ and $$\beta$$ to $$Y$$, $$a$$ and $$b$$. We'll proceed with an example, and show how these equations can be used for inference under some simplifying assumptions.
+
+
+# Example: 1-block SBM as an RDP
+
+Consider a simple example -- a 1-block stochastic block model with edge probability $$p$$ (better known as an Erdos-Renyi random graph with parameter $$p$$.) We'll follow the Mele et. al. idea described above and include a single observable binary covariate __M__ or __F__ on each node. If a pair of nodes have the same covariate value (i.e. both are __M__ or __F__), the chance of an edge between them is boosted from $$p$$ to $$p + \beta.$$ For simplicity, we'll only consider values of $$p$$ and $$\beta$$ that yield valid probabilities and dispense with a "squashing" function $$h\left(\cdot\right)$$.
+
+Let us now generate a network (a graph) $$G$$ with $$n=1000$$ nodes, $$p=.16$$, binary node attributes assigned randomly with probabilty $$\pi=.5$$, and attribute coefficient $$\beta=.3$$. This corresponds to an RDP with a single, 1-dimensional latent position $$\nu = \left[.4\right]$$, thus $$G \sim \mathrm{MeleRDP}\left(\nu,\pi,\beta,n\right)$$.
+
+To obtain node embeddings for $$G$$, we compute the eigendecomposition of its $$n \times n$$ (symmetric) adjacency matrix $$A$$ to get $$A = U \Sigma U^T$$. The top 10 eigenvalues are pictured below, but as is evident only the largest two eigenvalues are meaningful, thus we truncate $$\Sigma$$ to obtain $$\Sigma_*$$. 
+
+![Top 10 eigenvalues](/assets/images/evals_10_nu=.4,beta=.3.png)
+
+We compute the two dimensional embedding vectors $$V = U \Sigma_*^\frac{1}{2}$$, shown below. The mean embedding vectors are shown at the center of each cluster.
+
+![Node embeddings](/assets/images/embedding_nu=.4,beta=.3.png)
+
+
+# Inferring $$\beta$$
+
+We now show how to infer $$\beta$$ given the embedding vectors as the rows of $$V$$ grouped by observable covariates __M__ and __F__. Recall the equation above $$\|a-b\|^2 = 2\beta$$. Although we do not know the vectors $$Y$$, $$a$$ or $$b$$, we can still compute $$\beta$$ as follows. First, note that each node's embedding vector $$V_i$$ should be close to either $$Y+a$$ or $$Y+b$$ depending on its covariate. This should be done more carefully, but we assert that the mean vector $$\overline{V}_{i \in \mathbf{M}}$$ for nodes $$i$$ with covariate __M__ will approach $$Y + a$$, and the mean vector $$\overline{V}_{i \in \mathbf{F}}$$ for nodes $$i$$ with covariate __F__ will approach $$Y + b$$. Also, note that $$(Y+a) - (Y+b) = a-b$$, so we argue that $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$ approximates $$a-b$$.
+
+Thus, substituting $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$ for $$a-b$$, we compute an estimate for $$\beta$$ as
+\\[\hat{\beta} = \frac{\|\|\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}\|\|^2}{2}\\]
+
+In the example above, the true value is $$\beta=.3$$ and our estimate yields $$\hat{\beta} = 0.2988$$.
+
+# Inferring $$Y$$, $$a$$ and $$b$$
+
+We now wish to find the latent position vector $$Y$$ corresponding to the block embedding without the effect of the covariates. In so doing, we will also find the covariate "offset vectors" $$a$$ and $$b$$.
+
+I am not sure the best approach to doing this -- I feel that there might be a way to find the $$\hat{Y}$$, $$\hat{a}$$ and $$\hat{b}$$ given $$\overline{V_\mathbf{M}}$$ and $$\overline{V_\mathbf{F}}$$ that minimize the error on the constraints above. But for now, I'll go through one approach that seems intuitively reasonable based on the scatter plot above. Namely, to notice that the orientation of the cluster ellipses seems to point along vectors that would intersect, which should correspond to $$a$$ and $$b$$ meeting at the endpoint of $$Y$$.
+
+We first compute the covariance matrices $$\mathrm{Cov}\left[V_\mathbf{M}\right]$$ and $$\mathrm{Cov}\left[V_\mathbf{F}\right]$$, and take the eigenvectors to determine the orientation. The eigenvector with the largest eigenvalue for $$V_\mathbf{M}$$ is $$\left[0.40196, -0.91566\right]$$, $$V_\mathbf{F}$$ is $$\left[0.38517, 0.92285\right]$$.
+
+Next, we compute $$\hat{Y}$$ as the intersection point of the two lines that point along each eigenvector and pass through their respective cluster centroids, as shown below.
+
+![Node embeddings and solved Y, a and b](/assets/images/embedding_nu=.4,beta=.3_solved.png)
+
+With this inference process, we obtain the following values:\\
+$$\hat{Y} = \left[0.39114398,0.00350569\right]$$,\\
+$$\hat{a} = \left[ 0.16885581,-0.38464754\right]$$, and\\
+$$\hat{b} = \left[0.16210216,0.38839087\right]$$
+
+These have the property that $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{a}\rangle = 0.45887$$, $$\langle\hat{Y}+\hat{b},\hat{Y}+\hat{b}\rangle = 0.45966$$ and $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{b}\rangle = 0.16045$$. The true values are $$\langle X,X \rangle = .16$$ and $$\langle X, X\rangle + \beta = .46$$.
+
+
+# Implications and next steps
+
+[//]: One motivation of this exploration was to understand cluster separability, which depends on $$\beta$$ as well as 
+
+# Old stuff below 
+#### Simplifying assumption: $$\|a\| = \|b\|$$
+
+To solve for $$Y$$, $$a$$ and $$b$$ we will assume a constraint that $$\|a\| = \|b\|$$. This seems reasonable in that there is no _a priori_ reason that one covariate should shift the embeddings more than the other. It also seems that $$a$$ and $$b$$ should only be shifting the embeddings relative to each other so the total degrees of freedom is actually more restricted. 
+
+In any case, with this assumption, the equation from above that $$2Y(a-b) = \|b\|^2 - \|a\|^2$$ simplifies to $$Y(a-b) = 0$$, implying that $$Y$$ is orthogonal to $$a-b$$, which we are approximating as $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$. Working with the $$2$$-dimensional example above, $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}} = \left[0.00675365, -0.77303842\right]$$, which is more or less a vertical line. So, $$Y$$ should be both orthogonal to the vector $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$, and intersect at the midpoint. In fact, both constraints may not be jointly satisfied, as in this case, though selecting $$Y$$ to pass through the midpoint yields something nearly orthogonal to $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$. _(It would be interesting to see whether we can find the best fits for $$Y$$, $$a$$ and $$b$$ given $$\overline{V_\mathbf{M}}$$, $$\overline{V_\mathbf{F}}$$ and the constraints derived but we don't pursue further here.)_
+
+
+
+
+
+### Example: $$X$$ is 1-dimensional
+Let's consider an example where $$X$$ is one dimensional -- namely, that $$X = \left[q\right]$$ (thus, $$q = \sqrt{p}$$ with $$p$$ as the probability of an edge within the single block SBM.) I'm not quite sure how to formulate this, but when we introduce a second parameter $$\beta$$ which splits the block based on the node covariates, then we have introduced an additional degree of freedom and thus in our transformed space $$\mathrm{dim}(Y) = 2$$.
+
+Let's explore several simplifying assumptions:
+
+#### Simplifying assumption: $$\|a\| = \|b\|$$
+
+Here, we are assuming that the offsets $$a$$ and $$b$$ induced by covariates __M__ and __F__ have the same magnitude. This implies that $$Y(a-b) = 0$$, that is, the vector from $$a$$ to $$b$$ is orthogonal to $$Y$$.
+
+Suppose that $$Y = \left[q,0\right]$$, then if $$a = \left[r,s\right]$$ we must have $$b = \left[r,-s\right]$$. The first coordinate of $$a$$ and $$b$$ must be the same value ($$r$$) so that it yields vector $$a-b$$ orthogonal to $$Y$$. The second coordinate of $$s$$ and $$-s$$ is due to the fact that the norms are the same, i.e. that $$\|a\| = \|b\|$$. Finally, we have that $$\|a-b\|^2 = 2\beta$$, so $$a$$ and $$b$$ cannot be identical if $$\beta > 0$$.
+
+Geometrically, this means that if $$Y =\left[q,0\right]$$ (along the "$$x$$-axis", for example) the vectors $$a$$ and $$b$$ are orthogonal to $$Y$$ (along the "$$y$$-axis"), pointing in opposite directions, and of the same length determined by $$\beta$$.
+
+Now we can solve for $$a$$ and $$b$$ as follows:\\
+$$Y(a-b) + a(a-b) = \beta$$\\
+$$a(a-b) = \beta$$ _(since $$Y(a-b) = 0$$)_\\
+$$\left[r,s\right] \left[0,2s\right]^T = \beta$$\\
+$$2s^2 = \beta$$\\
+$$s = \sqrt{\frac{\beta}{2}}$$
+
+Now we can solve for $$r$$ -- i.e. the "$$x$$ offset" in $$a$$ and $$b$$. Returning to the original equations, we'll use\\
+$$XX + \beta = \left(Y+a\right)\left(Y+a\right)$$
+where we had assumed $$X = \left[q\right]$$. Then\\
+$$q^2 + \beta = \left[q+r,s\right] \left[q+r,s\right]^T$$\\
+$$q^2 + \beta = q^2 + 2qr + r^2 + s^2$$\\
+$$\beta = 2qr + r^2 + \frac{\beta}{2}$$\\
+$$r^2 + 2qr - \frac{\beta}{2} = 0$$
+
+Using the quadratic formula $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$, we have\\
+$$r = \frac{-2q \pm \sqrt{\left(2q\right)^2 + 4\frac{\beta}{2}}}{2}$$\\
+$$r = \frac{-2q \pm \sqrt{4q^2 + 4\frac{\beta}{2}}}{2}$$\\
+$$r = -q \pm \sqrt{q^2 + \frac{\beta}{2}}$$
+
+As a simple example, suppose that $$q = .5$$ (which in our SBM would lead to edge probability of $$p = q^2 = .25$$.) Then the above equation becomes\\
+$$r = -\frac{1}{2} \pm \sqrt{\frac{1}{4} + \frac{\beta}{2}}$$
+
+__Now... there is something missing still...__
+In particular, only one of the pair of solutions in the quadratic formula yields a result that works for the original three expressions (eg $$XX+ \beta = (Y+a)(Y+a)$$.) For my example, it turns out that it's for the solutions where the rhs of the quadratic is added (rather than subtracted.) In the case where it's subtracted, the solution still satisfies the constraints that I derived... but something went missing along the way, perhaps something that says that the inner product of $$Y$$ and $$a$$ (or $$b$$) should be positive. Or maybe it's that $$Y$$ and $$Y+a$$ should still be generally pointing in the same direction. So, should work through this...
+
+__I think there are some mistakes in the quadratic solution below__
+
+$$r^2 + r - \frac{\beta}{2} = 0$$ which we can solve using the quadratic formula to obtain\\
+$$r = -\frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}$$
+
+
+So, with $$q = .5$$, the cloud of points for __M__ and __F__ covariates would be offset by $$a = \left[\frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}, \sqrt{\frac{\beta}{2}}\right]$$ and 
+$$b = \left[\frac{1}{2} \pm \frac{\sqrt{1+2\beta}}{2}, -\sqrt{\frac{\beta}{2}}\right]$$
+
+The __next steps__ are to simulate this scenario, with $$X=\left[q\right]$$ and varying $$\beta$$, and confirming that the above calculations yield point clouds centered at the predicted locations. And to __include some pictures__.
+
+Not to lose sight of the bigger picture, there are additional questions:
+- How to develop this for > 1 blocks? Then we have $$X_1$$ and $$X_2$$ giving rise to the higher dimensional embeddings $$Y_1$$ and $$Y_2$$, but preserving the covariate offset vectors $$a$$ and $$b$$.
+- In the above presentation we assumed we knew $$\beta$$ and $$X$$. In fact during inference we don't but instead follow the Mele et. al. procedure of embedding followed by clustering and the inferring $$\beta$$. Instead in this approach, we would be trying to factor the clusters into vectors $$X_i$$ and $$a$$ and $$b$$. Not sure how tractable this is...
+- What motivated this in the first place was to understand something about how $$\beta$$ contributed to the separability of the clusters (and we also wondered about the original separability of the blocks.) Knowing how $$\beta$$ yields offset vectors $$a$$ and $$b$$ (and perhaps more importantly, the relative distance between them) seems like it should be useful in determining separability of the clusters in a way that $$\beta$$ by itself does not. What might be nice would be if we could bypass some of the details above and just focus on the value of $$\|a-b\|$$ though we would still need to know something about the covariance...
+- ... 
+
+
+
+#### Simplifying assumption: $$b = \vec{0}$$
+In the general case derivations above we showed that $$\|a-b\|^2 = 2\beta$$. With the assumption that $$b = \vec{0}$$, then $$a$$ is a vector with squared norm $$\|a\|^2 = 2\beta$$.
+
+Also, using $$(Y + a)(a - b) = \beta$$ from above and substituting $$b = \vec{0}$$ we have that $$Ya + aa = \beta$$ which simplifies to $$Ya = -\beta$$.
+
+From the one dimensional example described above, we suppose that $$Y = \left[q,0\right]$$, and that $$a = \left[r,s\right]$$, and $$b = \left[0,0\right]$$. So, plugging in to $$Ya = -\beta$$ we have that $$qr = -\beta$$, and $$r = -\frac{\beta}{q}$$.
+
+Since $$\|a\|^2 = 2\beta$$, then $$aa = 2\beta$$, implying that $$r^2 + s^2 = 2\beta$$. This simplifies to $$s = \sqrt{2\beta - r^2}$$. Plugging in $$r = -\frac{\beta}{q}$$ we get that\\
+$$s = \sqrt{2\beta - \frac{\beta^2}{q^2}}$$\\
+$$s = \sqrt{\frac{1}{q^2} \left[2\beta q^2 - \beta^2\right]}$$\\
+$$s = \frac{1}{q} \sqrt{2\beta q^2 - \beta^2}$$\\
+$$s = \frac{1}{q} \sqrt{\beta\left(2q^2 - \beta\right)}$$
+
+Working again with the above example with $$q=.5$$, we get that $$r=-2\beta$$ and $$s = 2\sqrt{\frac{1}{2}\beta - \beta^2}$$
+
+This yields $$a = \left[-2\beta, 2\sqrt{\frac{1}{2}\beta - \beta^2}\right]$$
+
+
+
+ __Note: didn't finish this part... have to double check signs also, maybe a bug...__
+
+## To do
+- Number / label the equations
+- Visualizations
