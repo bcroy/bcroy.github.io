@@ -4,6 +4,7 @@ title:  "Mele RDP"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
 ---
+_This is work with Al Gorin, part of our informal "reading group" on network analysis, particularly focused on random dot product graphs. We've been following the excellent work coming out of the Johns Hopkins group_
 
 _Note - this is all still under development_
 
@@ -22,10 +23,12 @@ __FF__: $$p_{ij} = h\left(\langle X,X \rangle + \beta\right)$$
 
 # New idea -- covariates as offsets in embedding space
 
-We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In other words, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:\\
+We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In some sense this is conceptually simpler -- each node is given a "complete" representation that captures both its latent position and covariate, and a single function (the inner product) is used to determine the likelihood of an edge between a pair of nodes. In short, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, we would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:\\
 __MM__: $$\langle X,X \rangle + \beta   = \langle Y+a, Y+a\rangle$$\\
 __MF__: $$\langle X,X \rangle = \langle Y+a, Y+b\rangle$$\\
 __FF__: $$\langle X,X \rangle + \beta   = \langle Y+b, Y+b\rangle$$
+
+Perhaps this is a stretch or the analogy is misleading, but it feels to me that there is something akin to a "[kernel trick](https://en.wikipedia.org/wiki/Kernel_method){:target="_blank"}{:rel="noopener noreferrer"}" going on here. We are proposing to take our node representations in the original space (latent position vector and covariate) and transform to a new space (a new latent position vector) such that the original function corresponds to an inner product in the new space. 
 
 We begin by expanding and combining the first and third equation. To simplify the notation a bit we dispense with inner product notation and instead write, for example, $$\langle Y,Y \rangle$$ as $$YY$$.\\
 $$2Ya + aa = 2Yb + bb$$\\
@@ -99,5 +102,7 @@ These have the property that $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{a}\rangle = 0
 
 
 ## To do
+- Implications & next steps
 - Number / label the equations
-- Visualizations
+- Develop for num blocks > 1
+- Further references on RDPs, SBMs etc?
