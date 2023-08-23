@@ -125,7 +125,7 @@ $$\begin{alignat}{3}
 \mathsf{FF:} \ & \langle X,X \rangle + \beta & = & \ \langle Y, Y\rangle        \label{eqFF2}\\
 \end{alignat}$$
 
-Then equations (\ref{eqMF2}) and (\ref{eqFF2}) can be combined to yield $$YY+Ya + \beta = YY$$, implying $$\beta = -Ya$$. Furthermore, combining equations (\ref{eqMM2}) and (\ref{eqFF2}) gives $$YY + 2Ya + aa = YY$$, which simplifies to $$2Ya + aa = 0$$, implying that $$aa = 2\beta$$, or that $$\beta = \frac{\|a\|^2}{2}$$. We can the rewrite equation (\ref{eqFF2}) as $$XX = YY - \beta$$, or $$\|X\| = \sqrt{\|Y\|^2 - \beta}$$.
+Then equations (\ref{eqMF2}) and (\ref{eqFF2}) can be combined to yield $$YY+Ya + \beta = YY$$, implying $$\beta = -Ya$$. Furthermore, combining equations (\ref{eqMM2}) and (\ref{eqFF2}) gives $$YY + 2Ya + aa = YY$$, which simplifies to $$2Ya + aa = 0$$, implying that $$aa = 2\beta$$, or that $$\beta = \frac{\|a\|^2}{2}$$. We can then rewrite equation (\ref{eqFF2}) as $$XX = YY - \beta$$, or $$\|X\| = \sqrt{\|Y\|^2 - \beta}$$.
 
 Thus, to estimate $$Y$$, $$a$$, $$\beta$$ and $$\|X\|$$ we have:\\
 $$\hat{Y} = \overline{V_\mathbf{F}} = \left[0.46336203, -0.20680491\right]$$,\\
