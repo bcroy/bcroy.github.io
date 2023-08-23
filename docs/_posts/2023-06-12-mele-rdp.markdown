@@ -4,11 +4,13 @@ title:  "Mele RDP"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
 ---
+<script src="/assets/js/mathjax-config.js" defer></script>
+
 _This is work with Al Gorin, part of our informal "reading group" on network analysis, particularly focused on random dot product graphs. We've been following the excellent work coming out of the Johns Hopkins group_
 
 _Note - this is all still under development_
 
-# Introduction
+## Introduction
 
 The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Carey E. Priebe, shows how to incorporate node-level covariates into stochastic block models (SBMs) as represented by random dot product graphs (RDPGs).
 
@@ -16,26 +18,33 @@ To begin, consider an SBM network with a single block, and nodes having an obser
 
 In Mele et. al., the likelihood of an edge between nodes $$i$$ and $$j$$ further depends on observable _covariates_ associated with the nodes. Mele et. al. begin with a simple node-level binary covariate -- if a pair of nodes have the same value of the covariate, then the likelihood of an edge is boosted by a function of a parameter $$\beta$$. More formally, $$p_{ij} = h\left(\langle X_i, X_j \rangle + 1_{\mathrm{same}}(\beta)\right)$$. Here, $$h$$ is simply a function that ensures $$p_{ij}$$ will be a valid probability.
 
-To make this more concrete, consider binary node-level covariate labels __M__ and __F__, again with a single block represented by latent position vector $$X$$. In the Mele et. al. setup we have:\\
-__MM__: $$p_{ij} = h\left(\langle X,X \rangle + \beta\right)$$\\
-__MF__: $$p_{ij} = h\left(\langle X,X \rangle\right)$$\\
-__FF__: $$p_{ij} = h\left(\langle X,X \rangle + \beta\right)$$
+To make this more concrete, consider binary node-level covariate labels __M__ and __F__, again with a single block represented by latent position vector $$X$$. In the Mele et. al. setup we have:
 
-# New idea -- covariates as offsets in embedding space
+$$\begin{alignat}{3}
+\mathsf{MM:} \ & p_{ij} = h\left(\langle X,X \rangle + \beta\right) \label{eqMM}\\
+\mathsf{MF:} \ & p_{ij} = h\left(\langle X,X \rangle\right)         \label{eqMF}\\
+\mathsf{FF:} \ & p_{ij} = h\left(\langle X,X \rangle + \beta\right) \label{eqFF}\\
+\end{alignat}$$
 
-We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In some sense this is conceptually simpler -- each node is given a "complete" representation that captures both its latent position and covariate, and a single function (the inner product) is used to determine the likelihood of an edge between a pair of nodes. In short, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, we would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:\\
-__MM__: $$\langle X,X \rangle + \beta   = \langle Y+a, Y+a\rangle$$\\
-__MF__: $$\langle X,X \rangle = \langle Y+a, Y+b\rangle$$\\
-__FF__: $$\langle X,X \rangle + \beta   = \langle Y+b, Y+b\rangle$$
+## New idea -- covariates as offsets in embedding space
+
+We now ask whether this formulation of conditionally applying $$\beta$$ can be instead represented as a node-level covariate vector, such that $$p_{ij}$$ can instead be computed as the inner product of node vectors. In some sense this is conceptually simpler -- each node is given a "complete" representation that captures both its latent position and covariate, and a single function (the inner product) is used to determine the likelihood of an edge between a pair of nodes. In short, can we transform into a new space where the covariate corresponds to an offset of the node embedding? For $$X$$ and $$\beta$$, we would like to find vectors $$Y$$, $$a$$ and $$b$$ such that:
+
+$$\begin{alignat}{3}
+\mathsf{MM:} \ & \langle X,X \rangle + \beta & = & \langle Y+a, Y+a\rangle \label{eqMM1}\\
+\mathsf{MF:} \ & \langle X,X \rangle         & = & \langle Y+a, Y+b\rangle \label{eqMF1}\\
+\mathsf{FF:} \ & \langle X,X \rangle + \beta & = & \langle Y+b, Y+b\rangle \label{eqFF1}\\
+\end{alignat}$$
+
 
 Perhaps this is a stretch or the analogy is misleading, but it feels to me that there is something akin to a "[kernel trick](https://en.wikipedia.org/wiki/Kernel_method){:target="_blank"}{:rel="noopener noreferrer"}" going on here. We are proposing to take our node representations in the original space (latent position vector and covariate) and transform to a new space (a new latent position vector) such that the original function corresponds to an inner product in the new space. 
 
-We begin by expanding and combining the first and third equation. To simplify the notation a bit we dispense with inner product notation and instead write, for example, $$\langle Y,Y \rangle$$ as $$YY$$.\\
+We begin by expanding and combining equations (\ref{eqMM1}) and (\ref{eqFF1}). To simplify the notation a bit we dispense with inner product notation and instead write, for example, $$\langle Y,Y \rangle$$ as $$YY$$.\\
 $$2Ya + aa = 2Yb + bb$$\\
 $$2Y(a-b) + aa - bb = 0$$\\
 $$2Y(a-b) = \|b\|^2 - \|a\|^2$$
 
-Next, we observe that the first and second (or the third and second) equations can be combined as follows:\\
+Next, we observe that equations (\ref{eqMM1}) and (\ref{eqMF1}) (or equations (\ref{eqFF1} and (\ref{eqMF1})) can be combined as follows:\\
 $$YY + 2Ya + aa = YY + Ya + Yb + ab + \beta$$\\
 $$Ya + aa = Yb + ab + \beta$$\\
 $$Ya - Yb + aa - ab = \beta$$\\
@@ -52,7 +61,7 @@ $$\|a-b\|^2 = 2\beta$$
 Note that these equations provide some constraints on $$Y$$, $$a$$ and $$b$$. We can now explore how to transform from $$X$$ and $$\beta$$ to $$Y$$, $$a$$ and $$b$$. We'll proceed with an example, and show how these equations can be used for inference under some simplifying assumptions.
 
 
-# Example: 1-block SBM as an RDP
+## Example: 1-block SBM as an RDP
 
 Consider a simple example -- a 1-block stochastic block model with edge probability $$p$$ (better known as an Erdos-Renyi random graph with parameter $$p$$.) We'll follow the Mele et. al. idea described above and include a single observable binary covariate __M__ or __F__ on each node. If a pair of nodes have the same covariate value (i.e. both are __M__ or __F__), the chance of an edge between them is boosted from $$p$$ to $$p + \beta.$$ For simplicity, we'll only consider values of $$p$$ and $$\beta$$ that yield valid probabilities and dispense with a "squashing" function $$h\left(\cdot\right)$$.
 
@@ -67,7 +76,7 @@ We compute the two dimensional embedding vectors $$V = U \Sigma_*^\frac{1}{2}$$,
 ![Node embeddings](/assets/images/embedding_nu=.4,beta=.3.png)
 
 
-# Inferring $$\beta$$
+### Inferring $$\beta$$
 
 We now show how to infer $$\beta$$ given the embedding vectors as the rows of $$V$$ grouped by observable covariates __M__ and __F__. Recall the equation above $$\|a-b\|^2 = 2\beta$$. Although we do not know the vectors $$Y$$, $$a$$ or $$b$$, we can still compute $$\beta$$ as follows. First, note that each node's embedding vector $$V_i$$ should be close to either $$Y+a$$ or $$Y+b$$ depending on its covariate. This should be done more carefully, but we assert that the mean vector $$\overline{V}_{i \in \mathbf{M}}$$ for nodes $$i$$ with covariate __M__ will approach $$Y + a$$, and the mean vector $$\overline{V}_{i \in \mathbf{F}}$$ for nodes $$i$$ with covariate __F__ will approach $$Y + b$$. Also, note that $$(Y+a) - (Y+b) = a-b$$, so we argue that $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$ approximates $$a-b$$.
 
@@ -76,7 +85,7 @@ Thus, substituting $$\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$ for $$a
 
 In the example above, the true value is $$\beta=.3$$ and our estimate yields $$\hat{\beta} = 0.2988$$.
 
-# Inferring $$Y$$, $$a$$ and $$b$$
+### Inferring $$Y$$, $$a$$ and $$b$$
 
 We now wish to find the latent position vector $$Y$$ corresponding to the block embedding without the effect of the covariates. In so doing, we will also find the covariate "offset vectors" $$a$$ and $$b$$.
 
@@ -95,14 +104,47 @@ $$\hat{b} = \left[0.16210216,0.38839087\right]$$
 
 These have the property that $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{a}\rangle = 0.45887$$, $$\langle\hat{Y}+\hat{b},\hat{Y}+\hat{b}\rangle = 0.45966$$ and $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{b}\rangle = 0.16045$$. The true values are $$\langle X,X \rangle = .16$$ and $$\langle X, X\rangle + \beta = .46$$.
 
+### Alternative, minimal derivation to obtain $$||X||$$
+The original equations above related the latent position vector $$X$$ and scalar $$\beta$$ to a higher dimensional space with new latent position vector $$Y$$ and offset vectors $$a$$ and $$b$$. This permits dispensing with the conditional offset, but at the cost of embedding into more dimensions. However, there are redundant degrees of freedom in the derivation above -- in particular, $$a$$ and $$b$$ are unconstrained. Taking the 1-dimensional example and accounting for the number of parameters in the formula
+$$p_{ij} = h\left(\langle X_i, X_j \rangle + 1_{\mathrm{same}}(\beta)\right)$$, we have:
+- $$X$$: 1 parameter (since dim=1)
+- $$\beta$$: 1 parameter
+- $$\mathrm{gender}_i$$, $$\mathrm{gender}_j$$: 2 parameters
 
-# Implications and next steps
+This yields a total of 4 parameters.
+
+However, in the higher 2-dimensional formulation $$p_{ij} = \langle Y+\rho_i, Y+\rho_j\rangle$$ where $$\rho = a$$ or $$\rho = b$$, depending on the genders. So, this adds up to 6 total parameters -- more than is needed. In fact, if we collapse $$Y$$ and $$\rho$$ appropriately for each node and let $$Z_i = Y+\rho_i$$, then $$p_{ij} = \langle Z_i, Z_j\rangle$$, and we are back to 4 parameters. This is a rough argument for both the equivalence of this alternative representation to the original, but also that we should simplify the derivation.
+
+So let's instead consider one of the covariates as canonical (e.g. __F__) and incorporate into $$Y$$, viewing the other covariate as a shift $$a$$ from $$Y$$, thus eliminating the $$b$$ offset vector. With this in mind, write the original three equations as:
+
+$$\begin{alignat}{3}
+\mathsf{MM:} \ & \langle X,X \rangle + \beta & = & \ \langle Y+a, Y+a\rangle    \label{eqMM2}\\
+\mathsf{MF:} \ & \langle X,X \rangle         & = & \ \langle Y+a, Y\rangle      \label{eqMF2}\\
+\mathsf{FF:} \ & \langle X,X \rangle + \beta & = & \ \langle Y, Y\rangle        \label{eqFF2}\\
+\end{alignat}$$
+
+Then equations (\ref{eqMF2}) and (\ref{eqFF2}) can be combined to yield $$YY+Ya + \beta = YY$$, implying $$\beta = -Ya$$. Furthermore, combining equations (\ref{eqMM2}) and (\ref{eqFF2}) gives $$YY + 2Ya + aa = YY$$, which simplifies to $$2Ya + aa = 0$$, implying that $$aa = 2\beta$$, or that $$\beta = \frac{\|a\|^2}{2}$$. We can the rewrite equation (\ref{eqFF2}) as $$XX = YY - \beta$$, or $$\|X\| = \sqrt{\|Y\|^2 - \beta}$$.
+
+Thus, to estimate $$Y$$, $$a$$, $$\beta$$ and $$\|X\|$$ we have:\\
+$$\hat{Y} = \overline{V_\mathbf{F}} = \left[0.46336203, -0.20680491\right]$$,\\
+$$\hat{a} = \overline{V_\mathbf{M}} - \overline{V_\mathbf{F}} = \left[-0.01059785, 0.4388148\right]$$,\\
+$$\hat{\beta} = \frac{\|\hat{a}\|^2}{2} = 0.3005324201786328$$,\\
+$$\|\hat{X}\| = \sqrt{\|\hat{Y}\|^2 - \hat{\beta}} = 0.4014190761582977$$
+
+___(note: the actual numbers are not all consistent since I did multiple runs... need to recompute)___
+
+In summary, $$\beta \approx 0.3005$$ and since in our example $$X$$ is 1-dimensional, $$X = \|X\| \approx .4014$$.
+
+
+## Implications and next steps
 
 [//]: One motivation of this exploration was to understand cluster separability, which depends on $$\beta$$ as well as 
 
 
 ## To do
+
 - Implications & next steps
-- Number / label the equations
+- can we show why the covariance matrices are oriented to point toward the endpoint of $$Y$$?
 - Develop for num blocks > 1
+- Number / label the equations
 - Further references on RDPs, SBMs etc?
