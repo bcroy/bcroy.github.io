@@ -10,11 +10,12 @@ _This is work with Al Gorin, part of our informal "reading group" on network ana
 
 _Note - this is all still under development_
 
-_2023-08-23: Updated to add the "Alternative, minimal derivation..." section_
+_2023-08-23: Updated to add the "Alternative, minimal derivation..." section_\\
+_2023-09-08: Updated to add the "2-block (and beyond)..." section_
 
 ## Introduction
 
-The paper _Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_, by Angelo Mele, Lingxin Hao, Joshua Cape, and Carey E. Priebe, shows how to incorporate node-level covariates into stochastic block models (SBMs) as represented by random dot product graphs (RDPGs).
+The paper [_Spectral Estimation of Large Stochastic Blockmodels with Discrete Nodal Covariates_](https://www.tandfonline.com/doi/full/10.1080/07350015.2022.2139709), by Angelo Mele, Lingxin Hao, Joshua Cape, and Carey E. Priebe, shows how to incorporate node-level covariates into stochastic block models (SBMs) as represented by random dot product graphs (RDPGs).
 
 To begin, consider an SBM network with a single block, and nodes having an observable binary covariate. Note that an SBM network with a single block is an Erdos-Renyi random graph with parameter $$p$$ governing the probability of an edge between a pair of nodes. Using the RDPG formalism for an SBM, a node $$i$$ in block $$b$$ is represented by a $$d$$-dimensional latent position vector $$X_b$$ associated with the block, such that $$p=\langle X,X \rangle$$. In the typical case of an SBM with multiple blocks, the RDPG formulation characterizes each block $$b$$ by a latent position vector $$X_{b}$$. The probability of an edge between nodes $$i$$ and $$j$$, which are members of blocks $$b_i$$ and $$b_j$$ respectively, is thus $$p_{ij} = \langle X_{b_i}, X_{b_j} \rangle$$.
 
@@ -201,7 +202,73 @@ Recall the symmetric 4x4 matrix $$B$$ from equation \ref{eqB}, which we rewrote 
 
 However, we can also see that by [Gaussian elimination](https://en.wikipedia.org/wiki/Gaussian_elimination), subtracting row 4 from row 3 and row 2 from row 1 of matrix $$B$$ yields two identical rows $$\left[\beta, -\beta, \beta, -\beta\right]$$, one of which would then be eliminated, yielding a row of all zeros implying $$B$$ is rank 3. 
 
-Hmm... a little stuck now... but what I am trying to do is identify, in general, that there exists a $$Y_1$$, $$Y_2$$ and covariate offset vector $$a$$ such that $$B$$ can be expressed as inner products of $$Y_1$$, $$Y_1 + a$$, $$Y_2$$ and $$Y_2 + a$$.
+### Factorizing $$B$$ using a covariate offset vector
+Following the same approach in the 1-block case, we can refactor $$B$$ in terms of block embedding vectors and a common covariate offset vector. We'll assume new block embedding vectors $$Y_1$$ and $$Y_2$$, and an offset vector $$a$$ corresponding to the covariate __M__. We thus rewrite equation \ref{eqB} as 
+
+$$
+B = \left[
+\begin{array}{l l l l}
+\left<Y_1+a,Y_1+a\right> & \left<Y_1+a,Y_1\right> & \left<Y_1+a,Y_2+a\right> & \left<Y_1+a,Y_2\right> \\
+\left<Y_1,Y_1+a\right> & \left<Y_1,Y_1\right> & \left<Y_1,Y_2+a\right> & \left<Y_1,Y_2\right> \\
+\left<Y_2+a,Y_1+a\right> & \left<Y_2+a,Y_1\right> & \left<Y_2+a,Y_2+a\right> & \left<Y_2+a,Y_2\right> \\
+\left<Y_2,Y_1+a\right> & \left<Y_2,Y_1\right> & \left<Y_2,Y_2+a\right> & \left<Y_2,Y_2\right> \\
+\end{array}
+\right]
+\label{eqB2}
+$$
+
+Viewed in this way, $$B = (S+T)^T (S+T)$$ where
+
+$$
+S = \begin{bmatrix}
+    \vert & \vert & \vert & \vert \\
+    Y_1   & Y_1   & Y_2   & Y_2   \\
+    \vert & \vert & \vert & \vert \\
+\end{bmatrix}, \quad
+T = \begin{bmatrix}
+\vert & \vert & \vert & \vert \\
+a     & 0     & a     & 0 \\
+\vert & \vert & \vert & \vert \\
+\end{bmatrix}
+\notag
+$$
+
+As noted above, $$B$$ is the Gram matrix for a set of vectors, which would be the columns of $$S+T$$. We now manipulate \ref{eqB2}, taking the same approach as equations \ref{eqMM2}, \ref{eqMF2}, \ref{eqFF2} -- we can equate the cells of this "offset" representation of $$B$$ with their counterparts in the original form in \ref{eqB}. Thus we have
+
+$$
+\begin{alignat}{7}
+B_{1,1} & = & B_{2,2}: \     & Y_1 Y_1 + 2Y_1 a + aa & = & \ Y_1 Y_1 & \quad \rightarrow \quad & 2Y_1 a + aa = 0 \notag \\
+B_{3,3} & = & B_{4,4}: \      & Y_2 Y_2 + 2Y_2 a + aa & = & \ Y_2 Y_2 & \quad \rightarrow \quad & 2Y_2 a + aa = 0 \notag \\
+B_{1,2}+\beta & = & B_{2,2}: \ & Y_1 Y_1 + Y_1 a + \beta \ & = & \ Y_1 Y_1 & \quad \rightarrow \quad & Y_1 a + \beta = 0 \notag \\
+B_{1,4}+\beta & = & B_{2,4}: \ & Y_1 Y_2 + Y_2 a + \beta \ & = & \ Y_1 Y_2 & \quad \rightarrow \quad & Y_2 a + \beta = 0 \notag \\
+\vdots & & & & & \notag\\
+\end{alignat}
+$$
+
+Using the same substitutions as done previously, we have 
+$$
+\beta = \frac{\|a\|^2}{2}
+$$.
+$$Y_1$$ can be estimated as $$\hat{Y_1} = \overline{V_{1,\mathbf{F}}}$$,  $$\hat{Y_2} = \overline{V_{2,\mathbf{F}}}$$. We can estimate $$a$$ as $$\hat{a} = \overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}$$ using either block 1 or block 2 (or averaging the estimates.)
+
+Note that we have largely ignored the effect of the "squashing" function $$h$$. The development above relies entirely on the $$B$$ matrix and treats the graph as an RDPG. However, in practice Mele et. al. must apply $$h^{-1}$$ in order to tease out the effect of $$\beta$$, and the same is true here. 
+Below we simulate example 3 from Mele et. al., which is a 2-block SBM with a binary covariate, using the methods developed here.
+
+__Note:__ I want to mention one small point. I argued that a single offset vector $$a$$ should be applied for the binary covariate for both blocks. This is because the total rank of the combined $$B$$ matrix is 3, not 4. Nonetheless, I did some derivations allowing for a different offset vector for each block. Namely, $$a$$ for block 1 and $$b$$ for block 2. Fortunately, it seems that we can conclude that $$\|a\|^2 = 2\beta$$, $$\|b\|^2 = 2\beta$$ and finally that $$\left<a,b\right> = 2\beta$$. For this to be the case, _I think_ it must be that $$a = b$$.
+
+### Example: Simulation and inference for a 2-block SBM with binary covariate
+
+
+$$\nu_1 = \left[-1.5, -1.0\right], \quad \nu_2 = \left[1.0, 0.5\right], \quad \beta = 1.5 \notag$$
+
+[//]: nu = np.vstack([nu_1,nu_2]).T
+[//]: nu # a d x K matrix
+
+
+
+[//]: [\hat{\beta} = \frac{\|\|\overline{V_\mathbf{M}} - \overline{V_\mathbf{F}}\|\|^2}{2}\\]
+
+
 
 ## Implications and next steps
 
