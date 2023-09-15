@@ -3,7 +3,6 @@ layout: post
 title:  "Mele RDPG"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
-toc: true
 ---
 <script src="/assets/js/mathjax-config.js" defer></script>
 
@@ -13,6 +12,10 @@ _Note - this is all still under development_
 
 _2023-08-23: Updated to add the "Alternative, minimal derivation..." section_\\
 _2023-09-08: Updated to add the "2-block (and beyond)..." section_
+
+* WILL BE REPLACED WITH TOC BY COMMAND BELOW
+{:toc}
+ 
 
 ## Introduction
 

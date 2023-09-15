@@ -34,7 +34,6 @@ theme: minima
 #theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed
-  - jekyll-toc
 
 #kramdown:
 #  math_engine: mathjax
@@ -61,9 +60,9 @@ plugins:
 #   - vendor/ruby/
 
 # TOC Settings -- TOC tutorial from here: https://heymichellemac.com/table-of-contents-jekyll
-toc:
- min_level: 1
- max_level: 3
- list_class: toc
- list_class: toc__list
- sublist_class: toc__sublist
+#toc:
+# min_level: 1
+# max_level: 3
+# list_class: toc
+# list_class: toc__list
+# sublist_class: toc__sublist
