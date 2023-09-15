@@ -1,0 +1,14 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+@import "minima";
+
+/** added by bcroy following https://talk.jekyllrb.com/t/need-help-with-image-caption/6715/12 */
+figcaption {
+    text-align: left;
+    font-size: 14px;
+    font-style: italic;
+    margin: 30px;
+    margin-top: -10px;
+}

@@ -3,6 +3,7 @@ layout: post
 title:  "Mele RDPG"
 date:   2023-06-12 12:58:00 -0500
 categories: RDPGs
+toc: true
 ---
 <script src="/assets/js/mathjax-config.js" defer></script>
 
@@ -76,7 +77,9 @@ To obtain node embeddings for $$G$$, we compute the eigendecomposition of its $$
 
 We compute the two dimensional embedding vectors $$V = U \Sigma_*^\frac{1}{2}$$, shown below. The mean embedding vectors are shown at the center of each cluster.
 
+{% figure caption:"RDPG node embeddings with $$\nu=.4$$, $$\beta=.3$$" %}
 ![Node embeddings](/assets/images/embedding_nu=.4,beta=.3.png)
+{% endfigure %}
 
 
 ### Inferring $$\beta$$
@@ -137,6 +140,26 @@ $$\|\hat{X}\| = \sqrt{\|\hat{Y}\|^2 - \hat{\beta}} = 0.4014190761582977$$
 ___(note: the actual numbers are not all consistent since I did multiple runs... need to recompute)___
 
 In summary, $$\beta \approx 0.3005$$ and since in our example $$X$$ is 1-dimensional, $$X = \|X\| \approx .4014$$.
+
+### Theoretical and empirical embedding positions as $$\beta$$ varies
+
+The parameter $$\beta$$ governs the change in edge probability for nodes with the same covariate. For $$\beta = 0$$ the node covariates have no effect on the edge probabilities, and the graph reduces to a simple 1-block SBM. On the other hand, as $$\beta$$ increases, two distinct clusters form, their means separated by offset vector $$a$$ described above.
+
+Focusing on the 2-dimensional case, we can derive the expected positions of the cluster means as follows. We know that $$\|a\|^2 = 2\beta$$ and that $$Y a = -\beta$$ (by combining equations (\ref{eqMF2}) and (\ref{eqFF2})). Then if we assume $$a$$ is axis aligned, we obtain $$a = \left[0, \sqrt{2\beta}\right]$$. Denoting the components of $$Y$$ as $$\left[y_0,y_1\right]$$ and solving $$Y a = -\beta$$ we obtain $$y_1 = -\sqrt{\beta/2}$$. Rewriting equation (\ref{eqFF2}) as $$\|Y\|^2 = \|X\|^2 + \beta$$ and solving yields $$y_0 = \sqrt{\|X\|^2 + \frac{\beta}{2}}$$.
+
+Thus, the expected cluster centers for each covariate are 
+
+$$
+Y = \left[\sqrt{\|X\|^2 + \frac{\beta}{2}}, -\sqrt{\frac{\beta}{2}}\right], \quad
+Y+a = \left[\sqrt{\|X\|^2 + \frac{\beta}{2}}, \sqrt{\frac{\beta}{2}}\right]
+\notag
+$$
+
+Continuing with our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers. This closely matches the the cluster centers shown in the simulation... __TODO: (have to recompute...)__
+
+{% figure caption:"Theoretical cluster centers for RDPG with single latent position at $$\nu=.4$$, varying $$\beta$$ from 0 to .8." %}
+![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
+{% endfigure %}
 
 ## 2-block (and beyond) SBM as an RDPG
 
