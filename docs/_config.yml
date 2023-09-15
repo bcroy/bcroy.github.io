@@ -35,7 +35,6 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-toc
-  - jekyll-figure
 
 #kramdown:
 #  math_engine: mathjax

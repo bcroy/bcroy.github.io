@@ -77,10 +77,8 @@ To obtain node embeddings for $$G$$, we compute the eigendecomposition of its $$
 
 We compute the two dimensional embedding vectors $$V = U \Sigma_*^\frac{1}{2}$$, shown below. The mean embedding vectors are shown at the center of each cluster.
 
-{% figure caption:"RDPG node embeddings with $$\nu=.4$$, $$\beta=.3$$" %}
+<!-- RDPG node embeddings with $$\nu=.4$$, $$\beta=.3$$ -->
 ![Node embeddings](/assets/images/embedding_nu=.4,beta=.3.png)
-{% endfigure %}
-
 
 ### Inferring $$\beta$$
 
@@ -157,9 +155,8 @@ $$
 
 Continuing with our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers. This closely matches the the cluster centers shown in the simulation... __TODO: (have to recompute...)__
 
-{% figure caption:"Theoretical cluster centers for RDPG with single latent position at $$\nu=.4$$, varying $$\beta$$ from 0 to .8." %}
 ![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
-{% endfigure %}
+<!-- Theoretical cluster centers for RDPG with single latent position at $$\nu=.4$$, varying $$\beta$$ from 0 to .8. -->
 
 ## 2-block (and beyond) SBM as an RDPG
 
