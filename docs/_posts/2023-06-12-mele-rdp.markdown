@@ -147,7 +147,7 @@ In summary, $$\beta \approx 0.3005$$ and since in our example $$X$$ is 1-dimensi
 
 The parameter $$\beta$$ governs the change in edge probability for nodes with the same covariate. For $$\beta = 0$$ the node covariates have no effect on the edge probabilities, and the graph reduces to a simple 1-block SBM. On the other hand, as $$\beta$$ increases, two distinct clusters form, their means separated by offset vector $$a$$ described above.
 
-Focusing on the 2-dimensional case, we can derive the expected positions of the cluster means as follows. We know that $$\|a\|^2 = 2\beta$$ and that $$Y a = -\beta$$ (by combining equations (\ref{eqMF2}) and (\ref{eqFF2})). Then if we assume $$a$$ is axis aligned, we obtain $$a = \left[0, \sqrt{2\beta}\right]$$. Denoting the components of $$Y$$ as $$\left[y_0,y_1\right]$$ and solving $$Y a = -\beta$$ we obtain $$y_1 = -\sqrt{\beta/2}$$. Rewriting equation (\ref{eqFF2}) as $$\|Y\|^2 = \|X\|^2 + \beta$$ and solving yields $$y_0 = \sqrt{\|X\|^2 + \frac{\beta}{2}}$$.
+Focusing on the 1-block case with a single binary covariate, we can derive the expected positions of the cluster means as follows. We know that $$\|a\|^2 = 2\beta$$ and that $$Y a = -\beta$$ (by combining equations (\ref{eqMF2}) and (\ref{eqFF2})). Then if we assume $$a$$ is axis aligned, we obtain $$a = \left[0, \sqrt{2\beta}\right]$$. Denoting the components of $$Y$$ as $$\left[y_0,y_1\right]$$ and solving $$Y a = -\beta$$ we obtain $$y_1 = -\sqrt{\beta/2}$$. Rewriting equation (\ref{eqFF2}) as $$\|Y\|^2 = \|X\|^2 + \beta$$ and solving yields $$y_0 = \sqrt{\|X\|^2 + \frac{\beta}{2}}$$.
 
 Thus, the expected cluster centers for each covariate are 
 
@@ -157,9 +157,22 @@ Y+a = \left[\sqrt{\|X\|^2 + \frac{\beta}{2}}, \sqrt{\frac{\beta}{2}}\right]
 \notag
 $$
 
+We can rewrite these as as a single equation. Write the $$x$$ and $$y$$ coordinates as functions of $$\beta$$, so 
+
+$$x^2(\beta) = \|X\|^2 + \frac{\beta}{2}, \quad y^2(\beta) = \frac{\beta}{2}
+\notag
+$$
+
+(_Note that squaring the $$y$$-coordinate for both $$Y$$ and $$Y+a$$ yields $$\beta/2$$_).
+Then, combining these equations yields 
+
+$$\frac{x^2(\beta) - y^2(\beta)}{\|X\|^2} = 1$$
+
+This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
+
 Continuing with our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers. This closely matches the the cluster centers shown in the simulation... __TODO: (have to recompute...)__
 
-![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
+![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="55%"}
 <!-- Theoretical cluster centers for RDPG with single latent position at $$\nu=.4$$, varying $$\beta$$ from 0 to .8. -->
 
 ## 2-block (and beyond) SBM as an RDPG
