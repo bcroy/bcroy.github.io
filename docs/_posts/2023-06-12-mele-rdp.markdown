@@ -172,7 +172,8 @@ This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 
 Continuing with our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers. This closely matches the the cluster centers shown in the simulation... __TODO: (have to recompute...)__
 
-![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="55%"}
+![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
+![Empirical clusters](/assets/images/empirical_clusters_nu=0.4.png){:width="45%"}
 <!-- Theoretical cluster centers for RDPG with single latent position at $$\nu=.4$$, varying $$\beta$$ from 0 to .8. -->
 
 ## 2-block (and beyond) SBM as an RDPG
