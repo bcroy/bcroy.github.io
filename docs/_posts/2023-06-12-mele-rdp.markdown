@@ -170,7 +170,7 @@ $$\frac{x^2(\beta) - y^2(\beta)}{\|X\|^2} = 1$$
 
 This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 
-Continuing our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers (left). This corresponds to the right-half of a horizontal hyperbola. For these same $$\beta$$ values we simulate a Mele RDPG with $$n=2000$$ nodes, each node's binary covariate $$Z$$ assigned randomly with $$p=.5$$. Note that for each choice of $$\beta$$ we regenerate the adjacency matrix $$A$$, but we do not change the randomly asssigned node covariate labels $$Z$$. The empirical clusters and covariance ellipses are shown in the figure below (right). As is evident, there is close agreement between the theoretical and empirical cluster centers.
+Continuing our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers (left). This corresponds to the right-half of a horizontal hyperbola. For these same $$\beta$$ values we simulate a Mele RDPG with $$n=2000$$ nodes, each node's binary covariate $$Z$$ assigned randomly with $$p=.5$$. Note that for each choice of $$\beta$$ we regenerate the adjacency matrix $$A$$, but we do not change the randomly assigned node covariate labels $$Z$$. The empirical clusters and covariance ellipses are shown in the figure below (right). As is evident, there is close agreement between the theoretical and empirical cluster centers.
 
 ![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
 ![Empirical clusters](/assets/images/empirical_clusters_nu=0.4.png){:width="45%"}
