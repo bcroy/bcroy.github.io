@@ -112,7 +112,7 @@ $$\hat{b} = \left[0.16210216,0.38839087\right]$$
 
 These have the property that $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{a}\rangle = 0.45887$$, $$\langle\hat{Y}+\hat{b},\hat{Y}+\hat{b}\rangle = 0.45966$$ and $$\langle\hat{Y}+\hat{a},\hat{Y}+\hat{b}\rangle = 0.16045$$. The true values are $$\langle X,X \rangle = .16$$ and $$\langle X, X\rangle + \beta = .46$$.
 
-### Alternative, minimal derivation to obtain $$||X||$$
+### Alternative, minimal derivation
 The original equations above related the latent position vector $$X$$ and scalar $$\beta$$ to a higher dimensional space with new latent position vector $$Y$$ and offset vectors $$a$$ and $$b$$. This permits dispensing with the conditional offset, but at the cost of embedding into more dimensions. However, there are redundant degrees of freedom in the derivation above -- in particular, $$a$$ and $$b$$ are unconstrained. Taking the 1-dimensional example and accounting for the number of parameters in the formula
 $$p_{ij} = h\left(\langle X_i, X_j \rangle + 1_{\mathrm{same}}(\beta)\right)$$, we have:
 - $$X$$: 1 parameter (since dim=1)
@@ -170,7 +170,7 @@ $$\frac{x^2(\beta) - y^2(\beta)}{\|X\|^2} = 1$$
 
 This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 
-Continuing with our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers. This closely matches the the cluster centers shown in the simulation... __TODO: (have to recompute...)__
+Continuing our example with 1-dimensional latent position $$\nu = \left[.4\right]$$, and varying $$\beta$$ from 0 to .8, we obtain the following theoretical cluster centers (left). This corresponds to the right-half of a horizontal hyperbola. For these same $$\beta$$ values we simulate a Mele RDPG with $$n=2000$$ nodes, each node's binary covariate $$Z$$ assigned randomly with $$p=.5$$. Note that for each choice of $$\beta$$ we regenerate the adjacency matrix $$A$$, but we do not change the randomly asssigned node covariate labels $$Z$$. The empirical clusters and covariance ellipses are shown in the figure below (right). As is evident, there is close agreement between the theoretical and empirical cluster centers.
 
 ![Theoretical cluster centers](/assets/images/theoretical_cluster_centers_nu=0.4.png){:width="45%"}
 ![Empirical clusters](/assets/images/empirical_clusters_nu=0.4.png){:width="45%"}
