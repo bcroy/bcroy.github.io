@@ -12,3 +12,11 @@ figcaption {
     margin: 30px;
     margin-top: -10px;
 }
+
+
+.custom-table {
+    width: 60%;
+    th, td {
+	padding: 2px;
+    }
+}

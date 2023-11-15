@@ -10,6 +10,9 @@ _This is work with Al Gorin, part of our informal "reading group" on network ana
 
 _Note - this is all still under development_
 
+_Note - I am not so sure the idea of finding the intersection point of the major axes of the covariances (see the figure in section "Inferring 
+Y, a and b") is actually correct. It was a first observation and intuition, but I think the correct and mathematically justified method is the one described in the section "Alternative, minimal derivation"._
+
 _2023-08-23: Updated to add the "Alternative, minimal derivation..." section_\\
 _2023-09-08: Updated to add the "2-block (and beyond)..." section_\\
 _2023-09-15: Updated to add the "Theoretical and empirical embedding positions..." section_
