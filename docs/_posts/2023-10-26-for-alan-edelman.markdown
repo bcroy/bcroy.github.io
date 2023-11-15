@@ -8,7 +8,7 @@ categories: RDPGs
 
 _You may have to refresh for the equation labels to display properly_
 
-_This is a note for Prof. Edelman. I have been working on this and related stuff for awhile, inspired by the work from [Carey Priebe](https://www.ams.jhu.edu/~priebe/) and colleagues at Johns Hopkins. In particular, I have been to come up with an alternative, more "geometric" approach to the paper by Mele et. al.[^Mele]. I think there's some novel stuff here that might be of interest to the network science community._
+_This is a note for Prof. Alan Edelman. I have been working on this and related stuff for awhile, inspired by the work from [Carey Priebe](https://www.ams.jhu.edu/~priebe/) and colleagues at Johns Hopkins. In particular, I have been trying to come up with an alternative, more "geometric" approach to the paper by Mele et. al.[^Mele]. I think there's some novel stuff here that might be of interest to the network science community._
 
 _The thing I am trying to figure out now is in the last section on "Embedding covariances..."_
 
