@@ -247,7 +247,7 @@ $$a_1 = \vec{q_1}^T \vec{q_1} = \sum_{i=1}^{n_1} q_{1,i}^2$$\
 Let $$\bar{q_1} = \mathrm{mean}(q_1)$$, so $$q_{1,i} = \bar{q_1} + \epsilon_i$$.
 Then $$a_1 = \sum_{i=1}^{n_1} \left(\bar{q_1} + \epsilon_i\right)^2$$ \
 $$a_1 = n_1 \bar{q_1}^2 + \sum_{i=1}^{n_1} \epsilon_i^2$$ (the other terms with $$\sum_i \bar{q_1} \epsilon_i$$ vanish since $$\epsilon$$ is mean 0)
-Now, we know someething about $$\bar{q}$$ from earlier derivations. Do we know anything about the variance of $$\epsilon$$? 
+Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know anything about the variance of $$\epsilon$$? 
 
 Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
 
