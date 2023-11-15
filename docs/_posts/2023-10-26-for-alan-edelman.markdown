@@ -152,7 +152,7 @@ $$p =\|\vec{y}\|^2 - \beta \label{eqP1}$$
 ### Inference
 The above derivation leads to a method for estimating $$p$$ and $$\beta$$ from an observed adjacency matrix with node covariates. First, compute the node embedding vectors (the row vectors $$\vec{x}_i$$ of $$X$$) as before via the eigendecomposition. Since the node covariate is observable, then the mean vector $$\vec{x}_D$$ is simply $$\vec{x}_D = \textrm{avg}\left(\left\{\vec{x}_i: Z_i = 0\right\}\right)$$, and $$\vec{x}_R$$ computed similarly for $$Z_i=1$$.
 
-The above derivation showed that the covariate could be represented as an offset vector $$\vec{a}$$, thus $$\hat{\vec{a}} = \vec{x}_R - \vec{x}_D$$. Applying equation (\ref{eqBeta2}) to $$\hat{\vec{a}}$$, we obtain an estimated $$\hat{\beta}$$ for each network. (Alternatively, equation (\ref{eqBeta1}) can also be used to estimate $$\beta$$ and gives similar results.) Using $$\vec{x}_D$$ as the estimate for $$y$$ in equation (\ref{eqP1}) and the corresponding estimates for $$\beta$$, we obtain estimates for $$p$$ for each network. The table below collects these results.
+The above derivation showed that the covariate could be represented as an offset vector $$\vec{a}$$, thus $$\hat{\vec{a}} = \vec{x}_R - \vec{x}_D$$. Applying equation (\ref{eqBeta2}) to $$\hat{\vec{a}}$$, we obtain an estimated $$\hat{\beta}$$ for each network. (Alternatively, equation (\ref{eqBeta1}) can also be used to estimate $$\beta$$ and gives similar results.) Using $$\vec{x}_D$$ as the estimate for $$\vec{y}$$ in equation (\ref{eqP1}) and the corresponding estimates for $$\beta$$, we obtain estimates for $$p$$ for each network. The table below collects these results.
 
 | $$p$$ |$$\hat{p}$$| $$\beta$$ | $$\hat{\beta}$$          |
 |---    |---|---        |---                       |
@@ -193,8 +193,7 @@ This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 
 But now, this is where I am currently. What I really want is to derive the covariance matrices for the clusters. Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
 
-Here's what I'm thinking about:
-
+Here are some ideas that I am trying out:
 
 Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_1$$ be the $$n_1 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 1, and $$X_2$$ the $$n_2 \times d$$ sub-matrix for cluster 2, where $$n_1 + n_2 = n$$. As a simplification for now, it might come in handy later to assume $$n_1 = n_2 = \frac{1}{2}n$$... ideally we don't want to rely on this assumption though.
 
