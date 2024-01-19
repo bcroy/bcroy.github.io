@@ -12,6 +12,8 @@ _This is a note for Prof. Alan Edelman. I have been working on this and related 
 
 _The thing I am trying to figure out now is in the last section on "Embedding covariances..."_
 
+_Update: 2024-01-19_ - I figured out the derivation of the per cluster covariance matrices, will write it up soon.
+
 * [this text is a placeholder, will be replaced with TOC by command below]
 {:toc}
 
@@ -258,7 +260,7 @@ https://towardsdatascience.com/principal-component-analysis-part-1-the-different
 We want to know the "variance of the projected data". In the sense that we are projecting each row of $$A$$ onto an eigenvector. For now let's not worry about the two groups, and just consider a single group with no offset $$\beta$$. So, start with row $$i$$ $$A_{i,\cdot}$$,  call it $$\vec{a}_i$$, and project onto the first eigenvector $$\vec{q_1}$$. Then $$\vec{x}_i = \frac{1}{\sqrt{\lambda_1}} \vec{a}_i \vec{q_1}$$. ...
 
 Eventually, we can get an expression for the variance of $$\vec{x}$$ in terms of the variance in the original space, which will look something like 
-$$\mathrm{Var}\left\[X_{\cdot,1}\right\] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ is the covariance matrix in the original space ... i.e. the space of our iid Bernoulli random variables. $$S$$ will be a symmetric $$n \times  n$$ matrix of covariances, so on the diagonal we will have $$\hat{sigma}^2 \approx p(1-p)$$. The off diagonals will have expected value of 0 (i think). Then what is the expected value of $$\vec{q_1}^T S \vec{q_1}$$? If we multiply it out, for each column of $$S$$ we would have a sum with many components of $$\vec{q_1}$$ multiplied by a mean 0 value and a single component of $$\vec{q_1}$$ multiplied by the diagonal element which is $$p(1-p)$$. So then, the whole thing will end up being $$\vec{q_1}_i^2 \hat{\sigma}_i^2$$. But I think the expected value of $$\hat{\sigma}_i^2 = p(1-p)$$ times the length $$\|\vec{q_1}\|^2 = 1$$. Or something. Actually, $$E\left[S\right] = \mathrm{diag}\left(p(1-p)\right)$$, right??
+$$\mathrm{Var}\left[X_{\cdot,1}\right] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ is the covariance matrix in the original space ... i.e. the space of our iid Bernoulli random variables. $$S$$ will be a symmetric $$n \times  n$$ matrix of covariances, so on the diagonal we will have $$\hat{sigma}^2 \approx p(1-p)$$. The off diagonals will have expected value of 0 (i think). Then what is the expected value of $$\vec{q_1}^T S \vec{q_1}$$? If we multiply it out, for each column of $$S$$ we would have a sum with many components of $$\vec{q_1}$$ multiplied by a mean 0 value and a single component of $$\vec{q_1}$$ multiplied by the diagonal element which is $$p(1-p)$$. So then, the whole thing will end up being $$\vec{q_1}_i^2 \hat{\sigma}_i^2$$. But I think the expected value of $$\hat{\sigma}_i^2 = p(1-p)$$ times the length $$\|\vec{q_1}\|^2 = 1$$. Or something. Actually, $$E\left[S\right] = \mathrm{diag}\left(p(1-p)\right)$$, right??
 
 This might be a better derivation for the single block case (with no covariate) from part 1 above, since it might be able to express the variance in terms of the Bernoulli variance. But unfortunately I'm not sure if this can be applied to the case with a covariate, because in that case there are two different variances, with the first variance multiplied by a first chunk of the eigenvector and the second variance is multiplied by the second chunk. 
 
