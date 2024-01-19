@@ -251,6 +251,23 @@ Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know an
 
 Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
 
+### Ok... here's an idea
+Following this development for PCA:
+https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553
+
+We want to know the "variance of the projected data". In the sense that we are projecting each row of $$A$$ onto an eigenvector. For now let's not worry about the two groups, and just consider a single group with no offset $$\beta$$. So, start with row $$i$$ $$A_{i,\cdot}$$,  call it $$\vec{a}_i$$, and project onto the first eigenvector $$\vec{q_1}$$. Then $$\vec{x}_i = \frac{1}{\sqrt{\lambda_1}} \vec{a}_i \vec{q_1}$$. ...
+
+Eventually, we can get an expression for the variance of $$\vec{x}$$ in terms of the variance in the original space, which will look something like 
+$$\mathrm{Var}\left\[X_{\cdot,1}\right\] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ is the covariance matrix in the original space ... i.e. the space of our iid Bernoulli random variables. $$S$$ will be a symmetric $$n \times  n$$ matrix of covariances, so on the diagonal we will have $$\hat{sigma}^2 \approx p(1-p)$$. The off diagonals will have expected value of 0 (i think). Then what is the expected value of $$\vec{q_1}^T S \vec{q_1}$$? If we multiply it out, for each column of $$S$$ we would have a sum with many components of $$\vec{q_1}$$ multiplied by a mean 0 value and a single component of $$\vec{q_1}$$ multiplied by the diagonal element which is $$p(1-p)$$. So then, the whole thing will end up being $$\vec{q_1}_i^2 \hat{\sigma}_i^2$$. But I think the expected value of $$\hat{\sigma}_i^2 = p(1-p)$$ times the length $$\|\vec{q_1}\|^2 = 1$$. Or something. Actually, $$E\left[S\right] = \mathrm{diag}\left(p(1-p)\right)$$, right??
+
+This might be a better derivation for the single block case (with no covariate) from part 1 above, since it might be able to express the variance in terms of the Bernoulli variance. But unfortunately I'm not sure if this can be applied to the case with a covariate, because in that case there are two different variances, with the first variance multiplied by a first chunk of the eigenvector and the second variance is multiplied by the second chunk. 
+
+### Another thought
+Ok, here's an idea. In the adjacency matrix, a row in the top half generally looks like a row in the bottom half except that the left and right groups are swapped (at least for the case where the groups sizes are equal). But in terms of how many 1s are in the top left block and the bottom right block, they are about the same, and the same is true for the top right and bottom left. Thus, I think we can argue that the top half of the values in the eigenvector are statistically similar to the bottom half of the values. Because if you grab a row from the bottom, swap left and right halves, and multiply it by the eigenvector it ought to yield a value that looks like the top half of the eigenvector. So that maybe gives us a constraint on the values in the eigenvector... they should be pretty similar, perhaps having the same mean and variance?
+
+Interestingly, the squared norm of each half of the eigenvector is about the same proportion as the number of nodes in each group...
+
+
 ## Summary
 Up to this point, I have focused on the simple ER random graph and the ER random graph with a single binary covariate. However, I have started on some work to show how this geometric interpretation can be applied to the stochastic block model. This is basically a "part 3" to this story -- see another draft writeup [here](http://bcroy.github.io/rdpgs/2023/06/12/mele-rdp.html#2-block-and-beyond-sbm-as-an-rdpg).
 
