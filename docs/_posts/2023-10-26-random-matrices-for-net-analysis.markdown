@@ -87,7 +87,7 @@ $$\mathrm{Cov}\left[X\right] = \left[\begin{array}{rr}
 
 and comparing the diagonal entries against $$\frac{\lambda_1}{n} - p = 0.00079714$$, $$\frac{\lambda_2}{n} = 0.02313892$$ 
 
-Wow, that's cool!
+Wow, that's cool! _(But I'm not going to lie... I'm not sure if those off-diagonal values are close enough to zero to ignore...)_
 
 ### Getting fancier
 
@@ -162,6 +162,8 @@ The above derivation showed that the covariate could be represented as an offset
 | .16   | 0.16076     | .15       | 0.15072                  |
 | .16   | 0.162       | .5        | 0.49992                  |
 {:.custom-table}
+
+Looks pretty good!
 
 ### Embedding positions as $$\beta$$ varies
 The parameter $$\beta$$ governs the change in edge probability for nodes with the same covariate. For $$\beta = 0$$ the node covariates have no effect on the edge probabilities, and the graph reduces to a simple Erdos-Renyi random graph. On the other hand, as $$\beta$$ increases, two distinct clusters form, their means separated by offset vector $$\vec{a}$$ described above.
@@ -238,6 +240,8 @@ $$\mathrm{Cov}\left[A_D\right] =
 \end{bmatrix}$$
 
 with zeros off the diagonal, the first $$N_D$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$N_R$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_D$$ can be expressed in terms of ...
+
+__TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_D\right]$$__
 
 
 
