@@ -193,6 +193,57 @@ This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 
 ### Embedding ___covariances___ as $$\beta$$ varies
 
+Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate. First, recall that 
+$$A = Q \Lambda Q^T$$, which we split as 
+$$A = Q \Lambda^\frac{1}{2} \Lambda^\frac{1}{2} Q^T$$.
+
+Then,
+$$A Q \Lambda^{-\frac{1}{2}} = Q \Lambda^\frac{1}{2}$$. Truncate the diagonal matrix $$\Lambda$$ to take only the first $$d$$ columns (i.e. taking the largest $$d$$ components), and let $$S = Q \Lambda_d^{-\frac{1}{2}}$$, then we obtain
+
+$$A Q \Lambda_d^{-\frac{1}{2}} = A S = Q \Lambda_d^\frac{1}{2} = X$$
+
+(Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats) in terms of the rows of the original adjacency matrix as $$X_D = A_D S$$.
+
+To obtain the covariance matrix for the embeddings for the Democrats, we have
+
+$$\begin{flalign*}
+&&& \mathrm{Cov}\left[ X_D\right] & \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( X_{D_i} - \overline{X_D}\right)^T \left( X_{D_i} - \overline{X_D}\right) \\
+
+& \mathrm{Cov}\left[ X_D\right] & \ = \ & \mathrm{Cov}\left[ A_D S\right] & \ = \ &
+\frac{1}{N_D} \sum_{i=1}^{N_D} \left( A_{D_i} S - \overline{A_D S}\right)^T
+    \left( A_{D_i} S - \overline{A_D S}\right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( S^T A_{D_i}^T - S^T\overline{A_D}^T\right) \left( A_{D_i} S - \overline{A_D} S \right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} S^T\left(A_{D_i} - \overline{A_D}\right)^T \left( A_{D_i} - \overline{A_D} \right) S \\
+
+&&&& \ = \ & S^T \mathrm{Cov}\left[A_D\right] S \\
+
+\end{flalign*}\notag
+
+$$
+
+(_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
+
+Note that $$\mathrm{Cov}\left[A_D\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_D$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
+
+I'll add the derivation later, but the result is that 
+
+$$\mathrm{Cov}\left[A_D\right] = 
+\begin{bmatrix}
+    \left(p+\beta\right)\left(1-\left(p+\beta\right)\right) &&& \\ 
+    & \ddots && \\
+    && p\left(1-p\right) & \\ 
+    &&& \ddots \\ 
+\end{bmatrix}$$
+
+with zeros off the diagonal, the first $$N_D$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$N_R$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_D$$ can be expressed in terms of ...
+
+
+
+Sections below were earlier notes. Some of it might be relevant... for example, there is some interesting stuff about the norm of a portion of a vector that could be useful. I have to find the references, but I believe by Van Vu. 
+
+#### Covariance derivation early ideas
 But now, this is where I am currently. What I really want is to derive the covariance matrices for the clusters. Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
 
 Here are some ideas that I am trying out:
@@ -253,7 +304,7 @@ Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know an
 
 Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
 
-### Ok... here's an idea
+#### Ok... here's an idea
 Following this development for PCA:
 https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553
 
