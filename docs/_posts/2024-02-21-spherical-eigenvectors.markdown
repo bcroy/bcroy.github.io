@@ -43,7 +43,7 @@ __A concern:__ I am a little worried that lurking in the background of the O'Rou
 
 
 ### Uniform distribution on the sphere
-It turns out there is a whole literature related to the statistics of distributions on the sphere. YARH! (**Y**et **A**nother **R**abbit **H**ole I went down...) There are also software packages, mostly in R, for testing distributions of points on the sphere $$S^{n-1}$$. The [`sphunif`](https://github.com/egarpor/sphunif) package seemed particularly good, along with the companion reference [^Garcia-Portugues]. Other references included
+It turns out there is a whole literature related to the statistics of distributions on the sphere. YARH! (**Y**et **A**nother **R**abbit **H**ole I went down...) There are also software packages, mostly in R, for testing distributions of points on the sphere $$S^{n-1}$$. The [`sphunif`](https://github.com/egarpor/sphunif)[^sphunif] package seemed particularly good, along with the companion reference [^Garcia-Portugues]. Other references included
 
 Some other references:
 - Recent advances in directional statistics, by Arthur Pewsey and Eduardo García-Portugués
@@ -52,7 +52,7 @@ Some other references:
 - 
 
 #### Points that _should_ be uniformly distributed
-We begin with a simple simulation -- generate a set of points that _should_ be uniformly distributed, and confirm that they are. One method to generate a set of points uniformly distributed on the sphere $$S^{n-1}$$ is, for each point, draw $$n$$ samples from a standard normal, collect into a vector, and normalize to unit length. For convenience, the `sphunif` provides the `r_unif_sph` function to generate uniformly distributed points on the sphere. The `unif_test` function provides multiple testing methods. I used the Rayleigh test and the CCF09 method, documented in [^Garcia-Portugues]. I generated 1000 vectors of dimension 1000 distributed uniformly on the sphere, testing with both the Rayleigh and CCF09[^Cuesta-Albertos] method, which did not reject the null hypothesis of uniformity. So that's good. Another interesting sanity check is to compute the pairwise dot products, to find that there are two regimes -- only 1000 dot products close to 1 (corresponding to the dot products of random vectors with themselves), and the remainder in a band $$[-.2,.2]$$ centered around 0. Specifically, for those in this band the mean and standard deviation are $$\hat{\mu} = 4.87005e^{-5}, \hat{\sigma}^2\approx.001$$. So, we see that a set of random vectors on the sphere $$S^{n-1}$$ are nearly orthogonal. Following the Stack Exchange post [here](https://stats.stackexchange.com/questions/85916/distribution-of-scalar-products-of-two-random-unit-vectors-in-d-dimensions)[^se1], the correlation is expected to be Beta distributed (but close to normal for large dimension $$n$$), with variance $$1/n$$, as observed.
+We begin with a simple simulation -- generate a set of points that _should_ be uniformly distributed, and confirm that they are. One method to generate a set of points uniformly distributed on the sphere $$S^{n-1}$$ is, for each point, draw $$n$$ samples from a standard normal, collect into a vector, and normalize to unit length. For convenience, the `sphunif`[^sphunif] provides the `r_unif_sph` function to generate uniformly distributed points on the sphere. The `unif_test` function provides multiple testing methods. I used the Rayleigh test and the CCF09 method, documented in [^Garcia-Portugues]. I generated 1000 vectors of dimension 1000 distributed uniformly on the sphere, testing with both the Rayleigh and CCF09[^Cuesta-Albertos] method, which did not reject the null hypothesis of uniformity. So that's good. Another interesting sanity check is to compute the pairwise dot products, to find that there are two regimes -- only 1000 dot products close to 1 (corresponding to the dot products of random vectors with themselves), and the remainder in a band $$[-.2,.2]$$ centered around 0. Specifically, for those in this band the mean and standard deviation are $$\hat{\mu} = 4.87005e^{-5}, \hat{\sigma}^2\approx.001$$. So, we see that a set of random vectors on the sphere $$S^{n-1}$$ are nearly orthogonal. Following the Stack Exchange post [here](https://stats.stackexchange.com/questions/85916/distribution-of-scalar-products-of-two-random-unit-vectors-in-d-dimensions)[^se1], the correlation is expected to be Beta distributed (but close to normal for large dimension $$n$$), with variance $$1/n$$, as observed.
 
 #### Eigenvectors of the ER random graph
 
@@ -107,7 +107,7 @@ Distribution of dot products, but where vectors are not unit vectors. This has a
 
 ## References
 
-[^ORourke]: O’Rourke, S., Vu, V., & Wang, K. (2016). Eigenvectors of random matrices: A survey. Journal of Combinatorial Theory, Series A, 144, 361–442. https://doi.org/10.1016/j.jcta.2016.06.008
+[^ORourke]: O’Rourke, S., Vu, V., & Wang, K. (2016). [Eigenvectors of random matrices: A survey.](https://doi.org/10.1016/j.jcta.2016.06.008) Journal of Combinatorial Theory, Series A, 144, 361–442.
 
 [^Mele]: Mele, A., Hao, L., Cape, J., & Priebe, C. E. (2021). Spectral inference for large Stochastic Blockmodels with nodal covariates (arXiv:1908.06438). arXiv. https://doi.org/10.48550/arXiv.1908.06438
 
@@ -115,14 +115,16 @@ Distribution of dot products, but where vectors are not unit vectors. This has a
 
 <!-- Stuff on distribution of points on the sphere -->
 
-[^Goldstein]: Goldstein, S., Lebowitz, J. L., Tumulka, R., & Zanghî, N. (2017). Any orthonormal basis in high dimension is uniformly distributed over the sphere. Annales de l’Institut Henri Poincaré, Probabilités et Statistiques, 53(2), 701–717. https://doi.org/10.1214/15-AIHP732
+[^Goldstein]: Goldstein, S., Lebowitz, J. L., Tumulka, R., & Zanghî, N. (2017). [Any orthonormal basis in high dimension is uniformly distributed over the sphere.](https://doi.org/10.1214/15-AIHP732) Annales de l’Institut Henri Poincaré, Probabilités et Statistiques, 53(2), 701–717.
 
-[^Cai]: Cai, T., Fan, J., & Jiang, T. (2013). Distributions of Angles in Random Packing on Spheres (arXiv:1306.0256). arXiv. https://doi.org/10.48550/arXiv.1306.0256
+[^Cai]: Cai, T., Fan, J., & Jiang, T. (2013). [Distributions of Angles in Random Packing on Spheres (arXiv:1306.0256).](https://doi.org/10.48550/arXiv.1306.0256) arXiv.
 
-[^Liu]: Liu, W., Lin, R., Liu, Z., Xiong, L., Schölkopf, B., & Weller, A. (2021, March). Learning with hyperspherical uniformity. In International Conference On Artificial Intelligence and Statistics (pp. 1180-1188). PMLR.
+[^Liu]: Liu, W., Lin, R., Liu, Z., Xiong, L., Schölkopf, B., & Weller, A. (2021, March). [Learning with hyperspherical uniformity.](https://proceedings.mlr.press/v130/liu21d.html) In International Conference On Artificial Intelligence and Statistics (pp. 1180-1188). PMLR.
 
-[^Garcia-Portugues]: García-Portugués, E., & Verdebout, T. (2018). An overview of uniformity tests on the hypersphere (arXiv:1804.00286). arXiv. http://arxiv.org/abs/1804.00286
+[^Garcia-Portugues]: García-Portugués, E., & Verdebout, T. (2018). [An overview of uniformity tests on the hypersphere (arXiv:1804.00286).](http://arxiv.org/abs/1804.00286) arXiv. 
 
 [^Cuesta-Albertos]: Cuesta-Albertos, J. A., Cuevas, A., and Fraiman, R. (2009). On projection-based tests for directional and compositional data. Stat. Comput., 19(4):367–380.
 
 [^se1]: Distribution of scalar products of two random unit vectors in $$D$$ dimensions. https://stats.stackexchange.com/questions/85916/distribution-of-scalar-products-of-two-random-unit-vectors-in-d-dimensions
+
+[^sphunif]: [sphunif](https://github.com/egarpor/sphunif) package. https://github.com/egarpor/sphunif
