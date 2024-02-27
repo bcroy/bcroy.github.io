@@ -17,8 +17,8 @@ _Update: 2024-01-19_ - I figured out the derivation of the per cluster covarianc
 * [this text is a placeholder, will be replaced with TOC by command below]
 {:toc}
 
-## Part 1 -- the simple case
-Consider an Erdos-Renyi random graph $$G(n,p)$$, with $$n$$ nodes and the (symmetric) probability of an edge between them drawn according to a Bernoulli with probability $$p$$. Then, the adjacency matrix representation is an $$n \times n$$ symmetric matrix $$A$$, with $$A_{i,j} \in \{0,1\}$$ according to Bernoulli($$p$$).
+## Part 1 -- Embeddings of Erdős-Renyi Random Graphs
+We begin with the simple case. Consider an Erdős-Renyi random graph $$G(n,p)$$, with $$n$$ nodes and the (symmetric) probability of an edge between them drawn according to a Bernoulli with probability $$p$$. Then, the adjacency matrix representation is an $$n \times n$$ symmetric matrix $$A$$, with $$A_{i,j} \in \{0,1\}$$ according to Bernoulli($$p$$).
 
 Our goal here is to obtain a different representation of $$G$$ using the "random dot product graph" formalism. We seek embedding vectors $$x_i \in \mathbb{R}^{d}, d \leq n$$ for the nodes $$i$$ in $$G$$, such that $$A_{ij} = \vec{x_i} \cdot \vec{x_j}$$
 
@@ -106,11 +106,11 @@ For reference, there are other, more recent papers than Füredi & Komlós[^fured
 
 To sum up, computing node embeddings for an ER random graph using the eigendecomposition is well understood from a random matrix theory perspective. Given parameters $$p$$ and $$n$$ for an ER random graph, we can infer the expected mean and covariance of the node embedding point cloud. Conversely, given the $$n \times n$$ symmetric adjacency matrix $$A$$ from an observed ER random graph $$G$$, we can compute the node embeddings and infer the ER parameter $$p$$.
 
-## Part 2 -- the thing I am trying to do
+## Part 2 -- Erdős-Renyi Random Graphs with nodal covariates
 
 Here's where I am trying to take all of this.
 
-Consider an Erdos-Renyi random graph $$G(n,p)$$, augmented with a node-level binary feature $$Z$$. The probability of an edge between two nodes that have the same binary feature is $$p+\beta$$, and an edge between nodes that have different binary features remains $$p$$. For example, the binary feature could denote a node's political party, and the value of $$\beta$$ reflecting how much it increases the edge probability between nodes with the same party affiliation.
+Consider an Erdős-Renyi random graph $$G(n,p)$$, augmented with a node-level binary feature $$Z$$. The probability of an edge between two nodes that have the same binary feature is $$p+\beta$$, and an edge between nodes that have different binary features remains $$p$$. For example, the binary feature could denote a node's political party, and the value of $$\beta$$ reflecting how much it increases the edge probability between nodes with the same party affiliation.
 
 As above, we are interested in the random dot product formulation and computing node embeddings. But now, we also wish to examine how the introduction of $$\beta$$ alters the geometry of the embeddings. 
 
