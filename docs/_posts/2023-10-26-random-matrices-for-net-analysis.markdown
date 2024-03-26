@@ -54,7 +54,7 @@ Wow, that's cool! What a nice, apparently axis-aligned ellipse.
 <!-- I colored the points $$x_i$$ by the number of non-zero entries in the correponding row. This corresponds to the "degree" of the node -- i.e. the number of incident edges. -->
 What can we say about the position of this point cloud, and its variance? 
 
-### Mean
+### Mean embedding positions
 
 Consider first the position. Imagine the "unreduced" embeddding (denote as $$X_n$$ for the full $$n$$ dimensions. Then $$X_ n = Q \Lambda^{\frac{1}{2}}$$, and $$\vec{x}, \vec{y}$$ as individual rows from $$X_n$$. We know that $$E\left[\vec{x} \cdot \vec{y}\right] = p$$, because $$\vec{x} \cdot \vec{y}$$ yields the corresponding entry in $$A$$, and the entries of $$A$$ have expected value $$p$$ since they are drawn from a Bernoulli with parameter $$p$$.
 
@@ -65,11 +65,11 @@ $$\sum_{i=1}^n E [x_i] E[y_i] = p$$, (justified by independence)\\
 $$\sum_{i=1}^n \mu_i^2 = p$$, (i think justified since $$\vec{x}$$ and $$\vec{y}$$ are drawn from same set of nodes and have same coordinate expectations)\\
 $$\|\vec{\mu}\| = \sqrt{p}$$
 
-Now... I am just going to assert that we'll extend this whole length of $$\sqrt{p}$$ along the first coordinate (i.e. the first eigenvector), so $$\mu_1 = \sqrt{p}$$. Thus, all the other coordinates $$\mu_2 \dots \mu_n$$ are 0. There must be a better way to do this... but in any case, $$\vec{\mu} = \left[\sqrt{p}, 0, \dots , 0\right]$$
+Thus, the mean position vector of all the node embeddings is $$\vec{\mu}$$, with norm $$\sqrt{p}$$. Now, any orthogonal transformation (i.e. rotation) in the original embedding space would preserve this inner product, and so it would be reasonable to choose a rotation such that the resultant mean vector had all of its length along the first coordinate. So, $$\mu_1 = \sqrt{p}$$, with all other coordinates $$\mu_2 \dots \mu_n$$ equal to 0 -- that is, $$\vec{\mu} = \left[\sqrt{p}, 0, \dots , 0\right]$$
 
-In fact, the mean vector in 2-dimensions is [.40062, .00025], close to what we would expect. Hey, not bad!
+In fact, in our example the mean vector in 2-dimensions is [.40062, .00025], even without a rotation (with a rotation we could nudge the second coordinate to 0.) Hey, not bad!
 
-### Covariance
+### Covariance of embeddings
 
 Now consider the covariance of this point cloud. We compute the covariance matrix $$\mathrm{Cov}\left[X\right] = \frac{1}{n} \left(X-\vec{\mu}\right)^T \left(X-\vec{\mu}\right) = \frac{1}{n} X^T X - \vec{\mu}^T \vec{\mu}$$.
 
@@ -89,7 +89,7 @@ and comparing the diagonal entries against $$\frac{\lambda_1}{n} - p = 0.0007971
 
 Wow, that's cool! _(But I'm not going to lie... I'm not sure if those off-diagonal values are close enough to zero to ignore...)_
 
-### Getting fancier
+### Getting fancier - eigenvalues of random Bernoulli matrices
 
 All this involved generating $$A$$ and computing the eigenvalues, but it seems like we should be able to say something just from knowing that $$A$$ is a symmetric Bernoulli matrix with parameter $$p$$. Indeed, Füredi & Komlós[^furedi] tell us something about what to expect for $$\lambda_1$$ and the next largest (in magnitude) eigenvalue. 
 
@@ -166,9 +166,9 @@ The above derivation showed that the covariate could be represented as an offset
 Looks pretty good!
 
 ### Embedding positions as $$\beta$$ varies
-The parameter $$\beta$$ governs the change in edge probability for nodes with the same covariate. For $$\beta = 0$$ the node covariates have no effect on the edge probabilities, and the graph reduces to a simple Erdos-Renyi random graph. On the other hand, as $$\beta$$ increases, two distinct clusters form, their means separated by offset vector $$\vec{a}$$ described above.
+The parameter $$\beta$$ governs the change in edge probability for nodes with the same covariate. For $$\beta = 0$$ the node covariates have no effect on the edge probabilities, and the graph reduces to a simple Erdos-Renyi random graph. On the other hand, as $$\beta$$ increases, two distinct clusters form, their means separated by offset vector $$\vec{a}$$ of length $$\sqrt{2\beta}$$ as described above.
 
-This is a little hand-wavy... but let's continue with the 2-dimensional case, and assume that $$\vec{a}$$ is axis aligned along the second eigenvector (and orthogonal to the first eigenvector). Then using equation (\ref{eqBeta2}) we know $$\vec{a} = \left[0, \sqrt{2\beta}\right]$$. 
+How do the positions of the cluster centers vary as a function of $$\beta$$? There might be a cleaner way to do this, but let's continue with the 2-dimensional case and assume that $$\vec{a}$$ is axis aligned along the second eigenvector (and orthogonal to the first eigenvector). Then using equation (\ref{eqBeta2}) we know $$\vec{a} = \left[0, \sqrt{2\beta}\right]$$. 
 
 Using $$\vec{a}$$ as above, and denoting the components of $$\vec{y}$$ as $$\left[y_0,y_1\right]$$, equation (\ref{eqBeta1}) yields $$\beta = -y_1 \sqrt{2\beta}$$, which gives $$y_1 = -\sqrt{\beta/2}$$.
 
@@ -192,6 +192,57 @@ This is the equation for a [hyperbola](https://en.wikipedia.org/wiki/Hyperbola).
 ![Empirical clusters](/assets/images/empirical+theoretical_clusters_p=.16,beta=0,.15,.5.png){:width="55%"}
 
 
+### Embedding variances as $$\beta$$ varies
+
+We see that as $$\beta$$ increases, the separation between the mean positions increases. But what happens to the embedding point clouds? It seems that their variances also decrease. We show this as follows.
+
+#### Distribution of points on the unit sphere
+First, a useful fact. Consider an $$n$$-dimensional unit vector $$v$$ randomly distributed on the surface of the sphere $$S^{n-1}$$. How are its coordinates distributed? They are Beta distributed on $$\left[-1,1\right]$$ with pdf $$\mathrm{Beta}\left(\frac{n-1}{2},\frac{n-1}{2}\right)$$ (Edelman, chapter 2 (forthcoming)[^Edelman]). Furthermore, the squared norm of a subset $$S$$ of the coordinates of such a vector 
+$$v$$ is distributed as $$\|v\|_S^2 \sim \mathrm{Beta}\left(\frac{|S|}{2},\frac{n-|S|}{2}\right)$$, so it has mean $$\frac{|S|}{n}$$ (see O'Rourke et. al. (2016)[^ORourke], Theorem 2.3, pg. 6). To put it in my own words, for any $$n$$-dimensional vector $$\vec{v}$$ uniformly distributed on the unit sphere, computing the squared norm over a subset $$S$$ of its coordinates yields a Beta distribution with mean $$\frac{|S|}{n}$$.
+
+For our purposes, can we treat the eigenvectors $$\vec{q}_i$$ as random vectors? 
+Goldstein (2017)[^Goldstein] tells us that such an orthonormal basis is expected to be uniformly distributed on the sphere. Put another way, any region $$\mathcal{R}$$ on the sphere, with probability measure $$u(\mathcal{R})$$ is expected to contain that fraction of the $$\vec{q}_i$$ points.
+(But I am not confident I'm getting the nuance of this result. I think the idea is, if we partition a sphere into a set of regions, not too many, then the distribution of the count of points in those regions is more or less invariant to any rotation of those regions on the sphere.) 
+A related result in Cai et. al. (2013)[^Cai] states that vectors corresponding to random points on the unit sphere are almost always nearly orthogonal.
+
+Of course, to some extent we know they cannot all be truly random since they must be orthogonal and so are constrained by each other. But my hope is that the above result related to the expected squared norm over a subset of coordinates still applies.
+
+#### Decomposing the variance
+
+Consider the variance of the point cloud along each eigenvector. We will decompose this total variance into the constituent variances for each covariate value, using the law of total variance, namely, 
+$$\mathrm{Var}(X) = E\left[\mathrm{Var}\left(X|Z\right)\right] + \mathrm{Var}\left(E\left[X|Z\right]\right)$$.
+We expand the first term of the right hand side as
+
+$$\mathrm{Var}\left(X|Z\right) p\left(Z=0\right) +  \mathrm{Var}\left(X|Z\right) p\left(Z=1\right)$$
+
+Let $$\alpha_0 = \frac{n_0}{N}$$ and $$\alpha_1 = \frac{n_1}{N}$$, then
+
+$$\left(\left(\frac{1}{n_0} \sum^{n_0} x_i^2\right) - \mu_0^2\right) \alpha_0 + 
+    \left(\left(\frac{1}{n_1} \sum^{n_1} x_i^2\right) - \mu_1^2\right) \alpha_1$$
+
+$$\left(\left(\frac{\lambda}{n_0} \sum^{n_0} q_i^2\right) - \mu_0^2\right) \alpha_0 + 
+    \left(\left(\frac{\lambda}{n_1} \sum^{n_1} q_i^2\right) - \mu_1^2\right) \alpha_1$$
+
+$$\left(\frac{\lambda}{n_0} \|\vec{q}\|^2_{n_0} - \mu_0^2\right) \alpha_0 + 
+    \left(\frac{\lambda}{n_1} \|\vec{q}\|^2_{n_1} - \mu_1^2\right) \alpha_1$$
+
+$$\left(\frac{\lambda}{n_0} \frac{n_0}{N} - \mu_0^2\right) \alpha_0 + 
+    \left(\frac{\lambda}{n_1} \frac{n_1}{N} - \mu_1^2\right) \alpha_1$$
+
+$$\left(\frac{\lambda}{N} - \mu_0^2\right) \alpha_0 + 
+    \left(\frac{\lambda}{N} - \mu_1^2\right) \alpha_1$$
+
+
+We expand the second term of the right hand side as
+
+... bunch of stuff ...
+
+$$\alpha_0 \mu_0^2 + \alpha_1 \mu_1^2 - \left(\alpha_0 \mu_0 + \alpha_1 \mu_1\right)^2$$
+
+
+So, the implications of all this are as follows.
+
+Suppose that $$\alpha_0 = \alpha_1 = \frac{1}{2}$$. Consider the first eigenvector, and suppose further that $$\mu_0 = \mu_1$$ Then,
 
 ### Embedding ___covariances___ as $$\beta$$ varies
 
@@ -350,6 +401,14 @@ Questions:
 
 [^Mele]: Mele, A., Hao, L., Cape, J., & Priebe, C. E. (2021). Spectral inference for large Stochastic Blockmodels with nodal covariates (arXiv:1908.06438). arXiv. https://doi.org/10.48550/arXiv.1908.06438
 
+[^Edelman]: Edelman, A. (forthcoming) Random Matrix Theory.
+
+[^ORourke]: O’Rourke, S., Vu, V., & Wang, K. (2016). [Eigenvectors of random matrices: A survey.](https://doi.org/10.1016/j.jcta.2016.06.008) Journal of Combinatorial Theory, Series A, 144, 361–442.
+
+[^Goldstein]: Goldstein, S., Lebowitz, J. L., Tumulka, R., & Zanghî, N. (2017). [Any orthonormal basis in high dimension is uniformly distributed over the sphere.](https://doi.org/10.1214/15-AIHP732) Annales de l’Institut Henri Poincaré, Probabilités et Statistiques, 53(2), 701–717.
+
+
+[^Cai]: Cai, T., Fan, J., & Jiang, T. (2013). [Distributions of Angles in Random Packing on Spheres (arXiv:1306.0256).](https://doi.org/10.48550/arXiv.1306.0256) arXiv.
 
 <!--
 Another way to do it..
