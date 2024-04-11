@@ -6,13 +6,15 @@ categories: RDPGs
 ---
 <script src="/assets/js/mathjax-config.js" defer></script>
 
-_You may have to refresh for the equation labels to display properly_
+___Note:___ _You may have to refresh for the equation labels to display properly._
 
-_This is a note for Prof. Alan Edelman. I have been working on this and related stuff for awhile, inspired by the work from [Carey Priebe](https://www.ams.jhu.edu/~priebe/) and colleagues at Johns Hopkins. In particular, I have been trying to come up with an alternative, more "geometric" approach to the paper by Mele et. al.[^Mele]. I think there's some novel stuff here that might be of interest to the network science community._
+_This is an evolving document, reflecting work with Allen Gorin on graph representations. Over the course of more than a year he and I met roughly once a week and focused on a few papers coming out of Johns Hopkins, particularly those by [Carey Priebe](https://www.ams.jhu.edu/~priebe/) and others. Initially we focused on understanding their work, and eventually started to conduct some of our own experiments._
 
-_The thing I am trying to figure out now is in the last section on "Embedding covariances..."_
+_In Mele et. al. (2021)[^Mele], the authors consider a Random Dot Product Graph (RDPG) formulation of networks with observable node covariates. Al and I read this paper with great interest, and spent a good deal of time trying to understand it._
 
-_Update: 2024-01-19_ - I figured out the derivation of the per cluster covariance matrices, will write it up soon.
+_In this post, I begin with their problem setup and have been working through an alternative, more "geometric" approach to the problem, which may be of interest to others. The thing I am trying to figure out now is in the last section on "Embedding covariances...", with the plan of then relating the means and variances to expected inference errors in this model._
+
+<!-- _Update: 2024-01-19_ - I figured out the derivation of the per cluster covariance matrices, will write it up soon. -->
 
 * [this text is a placeholder, will be replaced with TOC by command below]
 {:toc}
@@ -102,7 +104,7 @@ Equation 6 (page 234) states that the next largest eigenvalue (by absolute value
 
 For reference, there are other, more recent papers than Füredi & Komlós[^furedi] that dive deeper into the eigenvalues of random matrices. Specifically, the following series of recent papers: Benaych-Georges et. al. (2019)[^Benaych19], Benaych-Georges et. al. (2020)[^Benaych20] and Alt et. al. (2021)[^Alt]. However, I haven't really understood these yet, nor have I gone through the Füredi paper in detail beyond the basic result.
 
-### Summary - Part 1
+### Summary -- Part 1
 
 To sum up, computing node embeddings for an ER random graph using the eigendecomposition is well understood from a random matrix theory perspective. Given parameters $$p$$ and $$n$$ for an ER random graph, we can infer the expected mean and covariance of the node embedding point cloud. Conversely, given the $$n \times n$$ symmetric adjacency matrix $$A$$ from an observed ER random graph $$G$$, we can compute the node embeddings and infer the ER parameter $$p$$.
 
@@ -215,7 +217,7 @@ We expand the first term of the right hand side as
 
 $$\mathrm{Var}\left(X|Z\right) p\left(Z=0\right) +  \mathrm{Var}\left(X|Z\right) p\left(Z=1\right)$$
 
-Let $$\alpha_0 = \frac{n_0}{N}$$ and $$\alpha_1 = \frac{n_1}{N}$$, then
+Let $$\alpha_0 = \frac{n_0}{n}$$ and $$\alpha_1 = \frac{n_1}{n}$$, then
 
 $$\left(\left(\frac{1}{n_0} \sum^{n_0} x_i^2\right) - \mu_0^2\right) \alpha_0 + 
     \left(\left(\frac{1}{n_1} \sum^{n_1} x_i^2\right) - \mu_1^2\right) \alpha_1$$
@@ -226,11 +228,11 @@ $$\left(\left(\frac{\lambda}{n_0} \sum^{n_0} q_i^2\right) - \mu_0^2\right) \alph
 $$\left(\frac{\lambda}{n_0} \|\vec{q}\|^2_{n_0} - \mu_0^2\right) \alpha_0 + 
     \left(\frac{\lambda}{n_1} \|\vec{q}\|^2_{n_1} - \mu_1^2\right) \alpha_1$$
 
-$$\left(\frac{\lambda}{n_0} \frac{n_0}{N} - \mu_0^2\right) \alpha_0 + 
-    \left(\frac{\lambda}{n_1} \frac{n_1}{N} - \mu_1^2\right) \alpha_1$$
+$$\left(\frac{\lambda}{n_0} \frac{n_0}{n} - \mu_0^2\right) \alpha_0 + 
+    \left(\frac{\lambda}{n_1} \frac{n_1}{n} - \mu_1^2\right) \alpha_1$$
 
-$$\left(\frac{\lambda}{N} - \mu_0^2\right) \alpha_0 + 
-    \left(\frac{\lambda}{N} - \mu_1^2\right) \alpha_1$$
+$$\left(\frac{\lambda}{n} - \mu_0^2\right) \alpha_0 + 
+    \left(\frac{\lambda}{n} - \mu_1^2\right) \alpha_1$$
 
 
 We expand the second term of the right hand side as
@@ -246,6 +248,8 @@ Suppose that $$\alpha_0 = \alpha_1 = \frac{1}{2}$$. Consider the first eigenvect
 
 ### Embedding ___covariances___ as $$\beta$$ varies
 
+#### Approach 1
+
 Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate. First, recall that 
 $$A = Q \Lambda Q^T$$, which we split as 
 $$A = Q \Lambda^\frac{1}{2} \Lambda^\frac{1}{2} Q^T$$.
@@ -255,34 +259,17 @@ $$A Q \Lambda^{-\frac{1}{2}} = Q \Lambda^\frac{1}{2}$$. Truncate the diagonal ma
 
 $$A Q \Lambda_d^{-\frac{1}{2}} = A S = Q \Lambda_d^\frac{1}{2} = X$$
 
-(Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats) in terms of the rows of the original adjacency matrix as $$X_D = A_D S$$.
+(Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) 
 
-To obtain the covariance matrix for the embeddings for the Democrats, we have
+Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats in cluster 1) in terms of the rows of the original adjacency matrix as $$X_1 = A_1 S$$. To obtain the covariance matrix for $$X_1$$, we view it as the covariance of a linear transformation of the correponding adjacency matrix $$A_1$$, following the derivation in Appendix A. This yields
 
-$$\begin{flalign*}
-&&& \mathrm{Cov}\left[ X_D\right] & \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( X_{D_i} - \overline{X_D}\right)^T \left( X_{D_i} - \overline{X_D}\right) \\
+$$\mathrm{Cov}\left[ X_1\right]  = \mathrm{Cov}\left[ A_1 S\right]  =  S^T \mathrm{Cov}\left[A_1\right] S$$
 
-& \mathrm{Cov}\left[ X_D\right] & \ = \ & \mathrm{Cov}\left[ A_D S\right] & \ = \ &
-\frac{1}{N_D} \sum_{i=1}^{N_D} \left( A_{D_i} S - \overline{A_D S}\right)^T
-    \left( A_{D_i} S - \overline{A_D S}\right) \\
-
-&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( S^T A_{D_i}^T - S^T\overline{A_D}^T\right) \left( A_{D_i} S - \overline{A_D} S \right) \\
-
-&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} S^T\left(A_{D_i} - \overline{A_D}\right)^T \left( A_{D_i} - \overline{A_D} \right) S \\
-
-&&&& \ = \ & S^T \mathrm{Cov}\left[A_D\right] S \\
-
-\end{flalign*}\notag
-
-$$
-
-(_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
-
-Note that $$\mathrm{Cov}\left[A_D\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_D$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
+Note that $$\mathrm{Cov}\left[A_1\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_1$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
 
 I'll add the derivation later, but the result is that 
 
-$$\mathrm{Cov}\left[A_D\right] = 
+$$\mathrm{Cov}\left[A_1\right] = 
 \begin{bmatrix}
     \left(p+\beta\right)\left(1-\left(p+\beta\right)\right) &&& \\ 
     & \ddots && \\
@@ -290,18 +277,12 @@ $$\mathrm{Cov}\left[A_D\right] =
     &&& \ddots \\ 
 \end{bmatrix}$$
 
-with zeros off the diagonal, the first $$N_D$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$N_R$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_D$$ can be expressed in terms of ...
+with zeros off the diagonal, the first $$n_1$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$n_2$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_1$$ can be expressed in terms of ...
 
 __TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_D\right]$$__
 
+#### Approach 2
 
-
-Sections below were earlier notes. Some of it might be relevant... for example, there is some interesting stuff about the norm of a portion of a vector that could be useful. I have to find the references, but I believe by Van Vu. 
-
-#### Covariance derivation early ideas
-But now, this is where I am currently. What I really want is to derive the covariance matrices for the clusters. Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
-
-Here are some ideas that I am trying out:
 
 Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_1$$ be the $$n_1 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 1, and $$X_2$$ the $$n_2 \times d$$ sub-matrix for cluster 2, where $$n_1 + n_2 = n$$. As a simplification for now, it might come in handy later to assume $$n_1 = n_2 = \frac{1}{2}n$$... ideally we don't want to rely on this assumption though.
 
@@ -348,8 +329,19 @@ So now, if we could just figure the values for $$a_1, b_1, c_1$$ we would have a
 
 Well, recall that $$a_1, b_1, c_1$$ are the elements of $$Q_1^T Q_1$$, and correspondly $$a_2, b_2, c_2$$ are the elements of $$Q_2^T Q_2$$, where $$Q_i$$ are the rows of $$Q$$ for group $$i \in \left\{1,2\right\}$$. It's not too hard to show that $$a_1 + a_2 = 1$$, $$c_1 + c_2 = 1$$, $$b_1 + b_2 = 0$$ since we know $$Q^T Q = I$$.
 
+
+
+### Covariance derivation early ideas
+
+This is scratch work and ideas below... ignore for now. 
+
+Some ideas:
+
+
+#### Decompose the total covariance into the conditional covariances
 We can develop the relationship between $$\mathrm{Cov}\left[X_1\right], \mathrm{Cov}\left[X_2\right]$$ and $$\mathrm{Cov}\left[X\right]$$. I haven't done it in detail yet, but some things cancel but there is also a cross-term in $$\mathrm{Cov}\left[X\right]$$ that needs to be accounted for.
 
+#### Decompose into conditional means plus noise?
 What if we focus on the rows of $$X_1$$ and $$X_2$$? We could rewrite every row $$i$$ of $$X_1$$ as $$\vec{\mu_1} + \vec{\epsilon_{1,i}}$$. To start, just consider one of the dimensions (say the "x" axis). Then $$\epsilon_i$$ is a mean 0 random variable, and maybe we could figure out its variance (since it's related to the Bernoulli). So what if we do this (taking $$\vec{q_1}$$ as the first column of $$Q_1$$ -- let's just deal with group 1 for now):\\
 $$a_1 = \vec{q_1}^T \vec{q_1} = \sum_{i=1}^{n_1} q_{1,i}^2$$\
 Let $$\bar{q_1} = \mathrm{mean}(q_1)$$, so $$q_{1,i} = \bar{q_1} + \epsilon_i$$.
@@ -359,9 +351,8 @@ Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know an
 
 Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
 
-#### Ok... here's an idea
-Following this development for PCA:
-https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553
+#### Rewrite in terms of original covariances (developed this in approach 1)
+Following these [two derivations for PCA from Towards Data Science](https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553)
 
 We want to know the "variance of the projected data". In the sense that we are projecting each row of $$A$$ onto an eigenvector. For now let's not worry about the two groups, and just consider a single group with no offset $$\beta$$. So, start with row $$i$$ $$A_{i,\cdot}$$,  call it $$\vec{a}_i$$, and project onto the first eigenvector $$\vec{q_1}$$. Then $$\vec{x}_i = \frac{1}{\sqrt{\lambda_1}} \vec{a}_i \vec{q_1}$$. ...
 
@@ -370,21 +361,49 @@ $$\mathrm{Var}\left[X_{\cdot,1}\right] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ i
 
 This might be a better derivation for the single block case (with no covariate) from part 1 above, since it might be able to express the variance in terms of the Bernoulli variance. But unfortunately I'm not sure if this can be applied to the case with a covariate, because in that case there are two different variances, with the first variance multiplied by a first chunk of the eigenvector and the second variance is multiplied by the second chunk. 
 
-### Another thought
+#### Symmetry constraints?
 Ok, here's an idea. In the adjacency matrix, a row in the top half generally looks like a row in the bottom half except that the left and right groups are swapped (at least for the case where the groups sizes are equal). But in terms of how many 1s are in the top left block and the bottom right block, they are about the same, and the same is true for the top right and bottom left. Thus, I think we can argue that the top half of the values in the eigenvector are statistically similar to the bottom half of the values. Because if you grab a row from the bottom, swap left and right halves, and multiply it by the eigenvector it ought to yield a value that looks like the top half of the eigenvector. So that maybe gives us a constraint on the values in the eigenvector... they should be pretty similar, perhaps having the same mean and variance?
 
 Interestingly, the squared norm of each half of the eigenvector is about the same proportion as the number of nodes in each group...
 
+### Expected errors and cluster separation
+__TODO__
 
-## Summary
+Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
+
+### Summary -- part 2
+foo
+
+## Conclusion
 Up to this point, I have focused on the simple ER random graph and the ER random graph with a single binary covariate. However, I have started on some work to show how this geometric interpretation can be applied to the stochastic block model. This is basically a "part 3" to this story -- see another draft writeup [here](http://bcroy.github.io/rdpgs/2023/06/12/mele-rdp.html#2-block-and-beyond-sbm-as-an-rdpg).
 
 Questions:
 - Can we determine the eigenvalues of a block symmetric matrix? In this case, the overall adjacency matrix has a symmetric block structure, each of which is a simple Bernoulli random matrix. Füredi & Komlós[^furedi] tells us something about the eigenvalues of Bernoulli random matrices, but what about the concatenation of them? Or maybe we could set it up as the sum of block matrices, and then can we say something about its eigenvalues based on the eigenvalues of the constituents?
 
+## Appendix A - Covariance of a linear transformation of a random variable
+Derivation of the covariance of a linear transformation. (Note, normally covariance is $$(X-\mu) (X-\mu)^T$$, here we are transposing it... but I should switch this around to be more standard)
+
+$$\begin{flalign*}
+&&& \mathrm{Cov}\left[ X_D\right] & \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( X_{D_i} - \overline{X_D}\right)^T \left( X_{D_i} - \overline{X_D}\right) \\
+
+& \mathrm{Cov}\left[ X_D\right] & \ = \ & \mathrm{Cov}\left[ A_D S\right] & \ = \ &
+\frac{1}{N_D} \sum_{i=1}^{N_D} \left( A_{D_i} S - \overline{A_D S}\right)^T
+    \left( A_{D_i} S - \overline{A_D S}\right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( S^T A_{D_i}^T - S^T\overline{A_D}^T\right) \left( A_{D_i} S - \overline{A_D} S \right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} S^T\left(A_{D_i} - \overline{A_D}\right)^T \left( A_{D_i} - \overline{A_D} \right) S \\
+
+&&&& \ = \ & S^T \mathrm{Cov}\left[A_D\right] S \\
+
+\end{flalign*}\notag
+
+$$
+
+(_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
 
 
-# References
+## References
 [^guionnet]: Guionnet, A. (2023). [Bernoulli Random Matrices.](https://ems.press/books/standalone/262/5172), also on arXiv [here](https://arxiv.org/abs/2112.05506)
 
 [^ttao]: [Topics in random matrix theory](), T. Tao - 2023
