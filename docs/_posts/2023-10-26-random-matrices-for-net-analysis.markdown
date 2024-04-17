@@ -40,7 +40,7 @@ In fact, the top 5 eigenvalues (in magnitude) are as follows:
 [161.29670666, -23.16983909, 23.11578288, -23.05396533, 22.71975887] 
 {% endhighlight %}
 We also have the very nice semi-circle law on display.
-_I think we covered Wigner's semi-circle law in class... but unfortunately this is before I started coming in early October._ This paper by Guionnet[^guionnet] has more to say about Bernoulli random matrices.
+_ This paper by Guionnet[^guionnet] has more to say about Bernoulli random matrices.
 
 ![Eigenvalue histogram of ER(1000,.16)](/assets/images/ER_eigvals_hist.png)
 
@@ -261,15 +261,15 @@ $$A Q \Lambda_d^{-\frac{1}{2}} = A S = Q \Lambda_d^\frac{1}{2} = X$$
 
 (Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) 
 
-Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats in cluster 1) in terms of the rows of the original adjacency matrix as $$X_1 = A_1 S$$. To obtain the covariance matrix for $$X_1$$, we view it as the covariance of a linear transformation of the correponding adjacency matrix $$A_1$$, following the derivation in Appendix A. This yields
+Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats in cluster 0) in terms of the rows of the original adjacency matrix as $$X_0 = A_0 S$$. To obtain the covariance matrix for $$X_0$$, we view it as the covariance of a linear transformation of the correponding adjacency matrix $$A_0$$, following the derivation in [Appendix A](#appendix-A). This yields
 
-$$\mathrm{Cov}\left[ X_1\right]  = \mathrm{Cov}\left[ A_1 S\right]  =  S^T \mathrm{Cov}\left[A_1\right] S$$
+$$\mathrm{Cov}\left[ X_0\right]  = \mathrm{Cov}\left[ A_0 S\right]  =  S^T \mathrm{Cov}\left[A_0\right] S$$
 
-Note that $$\mathrm{Cov}\left[A_1\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_1$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
+Note that $$\mathrm{Cov}\left[A_0\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_0$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
 
 I'll add the derivation later, but the result is that 
 
-$$\mathrm{Cov}\left[A_1\right] = 
+$$\mathrm{Cov}\left[A_0\right] = 
 \begin{bmatrix}
     \left(p+\beta\right)\left(1-\left(p+\beta\right)\right) &&& \\ 
     & \ddots && \\
@@ -277,32 +277,32 @@ $$\mathrm{Cov}\left[A_1\right] =
     &&& \ddots \\ 
 \end{bmatrix}$$
 
-with zeros off the diagonal, the first $$n_1$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$n_2$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_1$$ can be expressed in terms of ...
+with zeros off the diagonal, the first $$n_0$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$n_1$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_0$$ can be expressed in terms of ...
 
-__TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_D\right]$$__
+__TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_0\right]$$__
 
 #### Approach 2
 
 
-Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_1$$ be the $$n_1 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 1, and $$X_2$$ the $$n_2 \times d$$ sub-matrix for cluster 2, where $$n_1 + n_2 = n$$. As a simplification for now, it might come in handy later to assume $$n_1 = n_2 = \frac{1}{2}n$$... ideally we don't want to rely on this assumption though.
+Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_0$$ be the $$n_0 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 0, and $$X_1$$ the $$n_1 \times d$$ sub-matrix for cluster 1, where $$n_0 + n_1 = n$$. 
 
-We wish to know $$\mathrm{Cov}\left[X_1\right]$$. If we can figure that out, then we can understand the orientation and shapes of the ellipses. As above, 
+We wish to know $$\mathrm{Cov}\left[X_0\right]$$. If we can figure that out, then we can understand the orientation and shapes of the ellipses. As above, 
 
 $$
-\mathrm{Cov}\left[X_1\right] = \frac{1}{n_1} \left(X_1-\vec{\mu_1}\right)^T \left(X_1-\vec{\mu_1}\right) = \frac{1}{n_1} X_1^T X_1 - \vec{\mu_1}^T \vec{\mu_1} \notag
+\mathrm{Cov}\left[X_0\right] = \frac{1}{n_0} \left(X_0-\vec{\mu_0}\right)^T \left(X_0-\vec{\mu_0}\right) = \frac{1}{n_0} X_0^T X_0 - \vec{\mu_0}^T \vec{\mu_0} \notag
 $$
 
-and analgously for $$X_2$$. Expanding the left hand side, we have
-$$X_1^T X_1 = \Lambda^\frac{1}{2}Q_1^T Q_1 \Lambda^\frac{1}{2}$$, where $$Q_1$$ corresponds to the $$n_1$$ rows of $$Q$$ for cluster 1. Note that $$Q_1^T Q_1$$ is not the identity matrix as was the case for $$Q^T Q$$, though it is symmetric. We write $$Q_1^T Q_1 =
-\left[\begin{array}{rr}a_1 & b_1 \\
-b_1 & c_1\\
-\end{array}\right]$$. Then, $$\frac{1}{n_1}X_1^T X_1 = 
-\frac{1}{n_1}\left[\begin{array}{cc}\lambda_1 a_1 & \sqrt{\lambda_1 \lambda_2} b_1 \\
-\sqrt{\lambda_1 \lambda_2}b_1 & \lambda_2 c_1\\
+and analgously for $$X_1$$. Expanding the left hand side, we have
+$$X_0^T X_0 = \Lambda^\frac{1}{2}Q_0^T Q_0 \Lambda^\frac{1}{2}$$, where $$Q_0$$ corresponds to the $$n_0$$ rows of $$Q$$ for cluster 0. Note that $$Q_0^T Q_0$$ is not the identity matrix as was the case for $$Q^T Q$$, though it is symmetric. We write $$Q_0^T Q_0 =
+\left[\begin{array}{rr}a_0 & b_0 \\
+b_0 & c_0\\
+\end{array}\right]$$. Then, $$\frac{1}{n_0}X_0^T X_0 = 
+\frac{1}{n_0}\left[\begin{array}{cc}\lambda_1 a_0 & \sqrt{\lambda_1 \lambda_2} b_1 \\
+\sqrt{\lambda_1 \lambda_2}b_0 & \lambda_2 c_0\\
 \end{array}\right]$$
 
-Taking the right hand side $$\vec{\mu_1}^T \vec{\mu_1}$$ and using the position vector $$\vec{\mu_1} = \left[\sqrt{p+\frac{\beta}{2}}, -\sqrt{\frac{\beta}{2}} \right]$$ derived above, we have
-the outer product $$\vec{\mu_1}^T \vec{\mu_1} = 
+Taking the right hand side $$\vec{\mu_0}^T \vec{\mu_0}$$ and using the position vector $$\vec{\mu_0} = \left[\sqrt{p+\frac{\beta}{2}}, -\sqrt{\frac{\beta}{2}} \right]$$ derived above, we have
+the outer product $$\vec{\mu_0}^T \vec{\mu_0} = 
 \left[\begin{array}{cc}
 p+\frac{\beta}{2} & -\sqrt{\frac{\beta}{2}\left(p+\frac{\beta}{2}\right)}\\
  -\sqrt{\frac{\beta}{2}\left(p+\frac{\beta}{2}\right)} & \frac{\beta}{2}
@@ -314,9 +314,9 @@ Note that if $$\beta = 0$$, then right hand side matrix becomes $$\left[\begin{a
 It's a bit messy, but putting these together we have 
 
 $$
-\mathrm{Cov}\left[X_1\right] =
-\frac{1}{n_1}\left[\begin{array}{cc}\lambda_1 a_1 & \sqrt{\lambda_1 \lambda_2} b_1 \\
-\sqrt{\lambda_1 \lambda_2}b_1 & \lambda_2 c_1\\
+\mathrm{Cov}\left[X_0\right] =
+\frac{1}{n_0}\left[\begin{array}{cc}\lambda_1 a_0 & \sqrt{\lambda_1 \lambda_2} b_0 \\
+\sqrt{\lambda_1 \lambda_2}b_0 & \lambda_2 c_0\\
 \end{array}\right] -
 \left[\begin{array}{cc}
 p+\frac{\beta}{2} & -\sqrt{\frac{\beta}{2}\left(p+\frac{\beta}{2}\right)}\\
@@ -325,11 +325,22 @@ p+\frac{\beta}{2} & -\sqrt{\frac{\beta}{2}\left(p+\frac{\beta}{2}\right)}\\
 \notag
 $$
 
-So now, if we could just figure the values for $$a_1, b_1, c_1$$ we would have a pretty complete characterization of this graph embedding!
+What are the values $$a_0, b_0, c_0$$ for cluster 0 (and correspondingly $$a_1, b_1 , c_1$$ for cluster 1)?
 
-Well, recall that $$a_1, b_1, c_1$$ are the elements of $$Q_1^T Q_1$$, and correspondly $$a_2, b_2, c_2$$ are the elements of $$Q_2^T Q_2$$, where $$Q_i$$ are the rows of $$Q$$ for group $$i \in \left\{1,2\right\}$$. It's not too hard to show that $$a_1 + a_2 = 1$$, $$c_1 + c_2 = 1$$, $$b_1 + b_2 = 0$$ since we know $$Q^T Q = I$$.
+Recall that these are the elements of the product $$Q_i^T Q_i$$, where $$Q_i$$ are the rows of $$Q$$ for cluster $$i \in \left\{0,1\right\}$$. It's not hard to show that $$a_0 + a_1 = 1$$, $$c_0 + c_1 = 1$$, $$b_0 + b_1 = 0$$ since we know $$Q^T Q = I$$.
 
+Using the properties of [points distributed on the unit sphere (discussed earlier)](#distribution-of-points-on-the-unit-sphere), we can see that
 
+$$\mathrm{E}\left[a_0\right] = \left[Q_0^T Q_0\right]_{(1,1)} = \|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$
+
+$$\mathrm{E}\left[c_0\right] = \left[Q_0^T Q_0\right]_{(2,2)} = \|\vec{q}_2\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$
+
+In words, $$a_0$$ and $$c_0$$ are Beta distributed random variables whose expected values are the squared norms of the first and second eigenvectors $$\vec{q}_1$$ and $$\vec{q}_2$$ over the subset of coordinates for cluster 0.
+
+For $$b_0$$, things seem to be a little trickier, since $$b_0 = \left[Q_0^T Q_0\right]_{(1,2)}$$. This corresponds to the inner product $$\vec{q}_1^T \vec{q}_2$$, but only over the subset of coordinates for $$Z=0$$. Empirically, when $$\frac{n_0}{n} \approx \frac{1}{2}$$, $$b_0 \approx \frac{1}{2}$$. But I'm not sure how to prove this. I've thought about rotating $$\vec{q}$$ so that the subvector for cluster 1 is axis aligned along the first coordinate, but where does that rotation take the coefficients of $$\vec{q}_2$$? While $$\vec{q}_1$$ and $$\vec{q}_2$$ are orthogonal, their subvectors need not be (and indeed, they aren't).
+
+One thing we can do is provide an upper bound on the absolute value of $$b_0$$, which is simply 
+$$|b_0| \leq \min\left\{\frac{n_0}{n},\frac{n_1}{n} \right\}$$
 
 ### Covariance derivation early ideas
 
@@ -380,7 +391,7 @@ Up to this point, I have focused on the simple ER random graph and the ER random
 Questions:
 - Can we determine the eigenvalues of a block symmetric matrix? In this case, the overall adjacency matrix has a symmetric block structure, each of which is a simple Bernoulli random matrix. Füredi & Komlós[^furedi] tells us something about the eigenvalues of Bernoulli random matrices, but what about the concatenation of them? Or maybe we could set it up as the sum of block matrices, and then can we say something about its eigenvalues based on the eigenvalues of the constituents?
 
-## Appendix A - Covariance of a linear transformation of a random variable
+## Appendix A - Covariance of a linear transformation of a random variable {#appendix-A}
 Derivation of the covariance of a linear transformation. (Note, normally covariance is $$(X-\mu) (X-\mu)^T$$, here we are transposing it... but I should switch this around to be more standard)
 
 $$\begin{flalign*}
