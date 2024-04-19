@@ -248,40 +248,9 @@ Suppose that $$\alpha_0 = \alpha_1 = \frac{1}{2}$$. Consider the first eigenvect
 
 ### Embedding ___covariances___ as $$\beta$$ varies
 
+Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate.
+
 #### Approach 1
-
-Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate. First, recall that 
-$$A = Q \Lambda Q^T$$, which we split as 
-$$A = Q \Lambda^\frac{1}{2} \Lambda^\frac{1}{2} Q^T$$.
-
-Then,
-$$A Q \Lambda^{-\frac{1}{2}} = Q \Lambda^\frac{1}{2}$$. Truncate the diagonal matrix $$\Lambda$$ to take only the first $$d$$ columns (i.e. taking the largest $$d$$ components), and let $$S = Q \Lambda_d^{-\frac{1}{2}}$$, then we obtain
-
-$$A Q \Lambda_d^{-\frac{1}{2}} = A S = Q \Lambda_d^\frac{1}{2} = X$$
-
-(Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) 
-
-Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats in cluster 0) in terms of the rows of the original adjacency matrix as $$X_0 = A_0 S$$. To obtain the covariance matrix for $$X_0$$, we view it as the covariance of a linear transformation of the correponding adjacency matrix $$A_0$$, following the derivation in [Appendix A](#appendix-A). This yields
-
-$$\mathrm{Cov}\left[ X_0\right]  = \mathrm{Cov}\left[ A_0 S\right]  =  S^T \mathrm{Cov}\left[A_0\right] S$$
-
-Note that $$\mathrm{Cov}\left[A_0\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_0$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
-
-I'll add the derivation later, but the result is that 
-
-$$\mathrm{Cov}\left[A_0\right] = 
-\begin{bmatrix}
-    \left(p+\beta\right)\left(1-\left(p+\beta\right)\right) &&& \\ 
-    & \ddots && \\
-    && p\left(1-p\right) & \\ 
-    &&& \ddots \\ 
-\end{bmatrix}$$
-
-with zeros off the diagonal, the first $$n_0$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$n_1$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_0$$ can be expressed in terms of ...
-
-__TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_0\right]$$__
-
-#### Approach 2
 
 
 Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_0$$ be the $$n_0 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 0, and $$X_1$$ the $$n_1 \times d$$ sub-matrix for cluster 1, where $$n_0 + n_1 = n$$. 
@@ -339,43 +308,55 @@ In words, $$a_0$$ and $$c_0$$ are Beta distributed random variables whose expect
 
 For $$b_0$$, things seem to be a little trickier, since $$b_0 = \left[Q_0^T Q_0\right]_{(1,2)}$$. This corresponds to the inner product $$\vec{q}_1^T \vec{q}_2$$, but only over the subset of coordinates for $$Z=0$$. Empirically, when $$\frac{n_0}{n} \approx \frac{1}{2}$$, $$b_0 \approx \frac{1}{2}$$. But I'm not sure how to prove this. I've thought about rotating $$\vec{q}$$ so that the subvector for cluster 1 is axis aligned along the first coordinate, but where does that rotation take the coefficients of $$\vec{q}_2$$? While $$\vec{q}_1$$ and $$\vec{q}_2$$ are orthogonal, their subvectors need not be (and indeed, they aren't).
 
-One thing we can do is provide an upper bound on the absolute value of $$b_0$$, which is simply 
-$$|b_0| \leq \min\left\{\frac{n_0}{n},\frac{n_1}{n} \right\}$$
-
-### Covariance derivation early ideas
-
-This is scratch work and ideas below... ignore for now. 
-
-Some ideas:
+One thing we can do is provide an upper bound on the absolute value of $$b_0$$. First, we know that for any vector $$\vec{x}$$ with norm constrained to $$\|\vec{x}\| = \|\vec{q}\|$$ has $$\vec{x}^T \vec{q} \leq \vec{q}^T\vec{q} = \|\vec{q}\|^2$$. Above, we claimed that the expected values of $$\|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \|\vec{q}_2\|^2_{\left\{Z=0\right\}}$$. And so we claim that $$b_0 \leq \|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$. And by the same logic, $$b_1 \leq \|\vec{q}_1\|^2_{\left\{Z=1\right\}} = \frac{n_1}{n}$$. But furthermore, since $$b_0 + b_1 = 0$$ then 
+$$|b_0| \leq \min\left\{\frac{n_0}{n},\frac{n_1}{n} \right\}$$.
 
 
-#### Decompose the total covariance into the conditional covariances
-We can develop the relationship between $$\mathrm{Cov}\left[X_1\right], \mathrm{Cov}\left[X_2\right]$$ and $$\mathrm{Cov}\left[X\right]$$. I haven't done it in detail yet, but some things cancel but there is also a cross-term in $$\mathrm{Cov}\left[X\right]$$ that needs to be accounted for.
+In any case, we can see that covariance ellipses are governed (or at least constrained) as follows:
 
-#### Decompose into conditional means plus noise?
-What if we focus on the rows of $$X_1$$ and $$X_2$$? We could rewrite every row $$i$$ of $$X_1$$ as $$\vec{\mu_1} + \vec{\epsilon_{1,i}}$$. To start, just consider one of the dimensions (say the "x" axis). Then $$\epsilon_i$$ is a mean 0 random variable, and maybe we could figure out its variance (since it's related to the Bernoulli). So what if we do this (taking $$\vec{q_1}$$ as the first column of $$Q_1$$ -- let's just deal with group 1 for now):\\
-$$a_1 = \vec{q_1}^T \vec{q_1} = \sum_{i=1}^{n_1} q_{1,i}^2$$\
-Let $$\bar{q_1} = \mathrm{mean}(q_1)$$, so $$q_{1,i} = \bar{q_1} + \epsilon_i$$.
-Then $$a_1 = \sum_{i=1}^{n_1} \left(\bar{q_1} + \epsilon_i\right)^2$$ \
-$$a_1 = n_1 \bar{q_1}^2 + \sum_{i=1}^{n_1} \epsilon_i^2$$ (the other terms with $$\sum_i \bar{q_1} \epsilon_i$$ vanish since $$\epsilon$$ is mean 0)
-Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know anything about the variance of $$\epsilon$$? 
+$$
+\mathrm{Cov}\left[X_0\right] =
+\left[\begin{array}{cc}\sigma^2_{1,1} & \sigma^2_{1,2} \\
+\sigma^2_{1,2} & \sigma^2_{2,2}\\
+\end{array}\right]
+\notag
+$$ where $$\sigma^2_{1,1} = \frac{\lambda_1}{n} - \left(p+\frac{\beta}{2}\right)$$, $$\sigma^2_{2,2} = \frac{\lambda_2}{n} - \frac{\beta}{2}$$, and  $$\sigma^2_{1,2}$$ is sort of annoying...
 
-Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
+__TODO__ -- It might be worth doing another experiment with unbalanced $$n_1$$ and $$n_2$$, since the covariance matrices should have interesting off-diagonal values.
 
-#### Rewrite in terms of original covariances (developed this in approach 1)
-Following these [two derivations for PCA from Towards Data Science](https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553)
+#### Approach 2
 
-We want to know the "variance of the projected data". In the sense that we are projecting each row of $$A$$ onto an eigenvector. For now let's not worry about the two groups, and just consider a single group with no offset $$\beta$$. So, start with row $$i$$ $$A_{i,\cdot}$$,  call it $$\vec{a}_i$$, and project onto the first eigenvector $$\vec{q_1}$$. Then $$\vec{x}_i = \frac{1}{\sqrt{\lambda_1}} \vec{a}_i \vec{q_1}$$. ...
+First, recall that 
+$$A = Q \Lambda Q^T$$, which we split as 
+$$A = Q \Lambda^\frac{1}{2} \Lambda^\frac{1}{2} Q^T$$.
 
-Eventually, we can get an expression for the variance of $$\vec{x}$$ in terms of the variance in the original space, which will look something like 
-$$\mathrm{Var}\left[X_{\cdot,1}\right] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ is the covariance matrix in the original space ... i.e. the space of our iid Bernoulli random variables. $$S$$ will be a symmetric $$n \times  n$$ matrix of covariances, so on the diagonal we will have $$\hat{\sigma}^2 \approx p(1-p)$$. The off diagonals will have expected value of 0 (i think). Then what is the expected value of $$\vec{q_1}^T S \vec{q_1}$$? If we multiply it out, for each column of $$S$$ we would have a sum with many components of $$\vec{q_1}$$ multiplied by a mean 0 value and a single component of $$\vec{q_1}$$ multiplied by the diagonal element which is $$p(1-p)$$. So then, the whole thing will end up being $$\vec{q_1}_i^2 \hat{\sigma}_i^2$$. But I think the expected value of $$\hat{\sigma}_i^2 = p(1-p)$$ times the length $$\|\vec{q_1}\|^2 = 1$$. Or something. Actually, $$E\left[S\right] = \mathrm{diag}\left(p(1-p)\right)$$, right??
+Then,
+$$A Q \Lambda^{-\frac{1}{2}} = Q \Lambda^\frac{1}{2}$$. Truncate the diagonal matrix $$\Lambda$$ to take only the first $$d$$ columns (i.e. taking the largest $$d$$ components), and let $$S = Q \Lambda_d^{-\frac{1}{2}}$$, then we obtain
 
-This might be a better derivation for the single block case (with no covariate) from part 1 above, since it might be able to express the variance in terms of the Bernoulli variance. But unfortunately I'm not sure if this can be applied to the case with a covariate, because in that case there are two different variances, with the first variance multiplied by a first chunk of the eigenvector and the second variance is multiplied by the second chunk. 
+$$A Q \Lambda_d^{-\frac{1}{2}} = A S = Q \Lambda_d^\frac{1}{2} = X$$
 
-#### Symmetry constraints?
-Ok, here's an idea. In the adjacency matrix, a row in the top half generally looks like a row in the bottom half except that the left and right groups are swapped (at least for the case where the groups sizes are equal). But in terms of how many 1s are in the top left block and the bottom right block, they are about the same, and the same is true for the top right and bottom left. Thus, I think we can argue that the top half of the values in the eigenvector are statistically similar to the bottom half of the values. Because if you grab a row from the bottom, swap left and right halves, and multiply it by the eigenvector it ought to yield a value that looks like the top half of the eigenvector. So that maybe gives us a constraint on the values in the eigenvector... they should be pretty similar, perhaps having the same mean and variance?
+(Note that we can also truncate to $$d$$ columns of $$Q$$ if we also truncate $$\Lambda$$ to $$d \times d$$, though it is not necessary.) 
 
-Interestingly, the squared norm of each half of the eigenvector is about the same proportion as the number of nodes in each group...
+Now we can express the embeddings for nodes with a particular covariate (e.g. the Democrats in cluster 0) in terms of the rows of the original adjacency matrix as $$X_0 = A_0 S$$. To obtain the covariance matrix for $$X_0$$, we view it as the covariance of a linear transformation of the correponding adjacency matrix $$A_0$$, following the derivation in [Appendix A](#appendix-A). This yields
+
+$$\mathrm{Cov}\left[ X_0\right]  = \mathrm{Cov}\left[ A_0 S\right]  =  S^T \mathrm{Cov}\left[A_0\right] S$$
+
+Note that $$\mathrm{Cov}\left[A_0\right]$$ is an $$n \times n$$ matrix, but the application of $$S$$ projects to a $$d \times d$$ matrix, as it should be. This is an advantageous formulation because the covariance of $$A_0$$ arises in a straighforward manner from the underlying Bernouilli random variables governing edge formation, which is parameterized by $$p$$ and $$\beta$$. __TODO: add the derivation here__. 
+
+I'll add the derivation later, but the result is that 
+
+$$\mathrm{Cov}\left[A_0\right] = 
+\begin{bmatrix}
+    \left(p+\beta\right)\left(1-\left(p+\beta\right)\right) &&& \\ 
+    & \ddots && \\
+    && p\left(1-p\right) & \\ 
+    &&& \ddots \\ 
+\end{bmatrix}$$
+
+with zeros off the diagonal, the first $$n_0$$ diagonal elements having value $$\left(p+\beta\right)\left(1-\left(p+\beta\right)\right)$$ and the last $$n_1$$ diagonal elements with value $$p\left(1-p\right)$$. So now, the parameters of the covariance ellipse for $$X_0$$ can be expressed in terms of ...
+
+__TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_0\right]$$__
+
 
 ### Expected errors and cluster separation
 __TODO__
@@ -413,6 +394,40 @@ $$
 
 (_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
 
+## Appendix B: Covariance derivation early ideas {#appendix-B}
+
+This is scratch work and ideas below... ignore for now. 
+
+Some ideas:
+
+
+### Decompose the total covariance into the conditional covariances
+We can develop the relationship between $$\mathrm{Cov}\left[X_1\right], \mathrm{Cov}\left[X_2\right]$$ and $$\mathrm{Cov}\left[X\right]$$. I haven't done it in detail yet, but some things cancel but there is also a cross-term in $$\mathrm{Cov}\left[X\right]$$ that needs to be accounted for.
+
+### Decompose into conditional means plus noise?
+What if we focus on the rows of $$X_1$$ and $$X_2$$? We could rewrite every row $$i$$ of $$X_1$$ as $$\vec{\mu_1} + \vec{\epsilon_{1,i}}$$. To start, just consider one of the dimensions (say the "x" axis). Then $$\epsilon_i$$ is a mean 0 random variable, and maybe we could figure out its variance (since it's related to the Bernoulli). So what if we do this (taking $$\vec{q_1}$$ as the first column of $$Q_1$$ -- let's just deal with group 1 for now):\\
+$$a_1 = \vec{q_1}^T \vec{q_1} = \sum_{i=1}^{n_1} q_{1,i}^2$$\
+Let $$\bar{q_1} = \mathrm{mean}(q_1)$$, so $$q_{1,i} = \bar{q_1} + \epsilon_i$$.
+Then $$a_1 = \sum_{i=1}^{n_1} \left(\bar{q_1} + \epsilon_i\right)^2$$ \
+$$a_1 = n_1 \bar{q_1}^2 + \sum_{i=1}^{n_1} \epsilon_i^2$$ (the other terms with $$\sum_i \bar{q_1} \epsilon_i$$ vanish since $$\epsilon$$ is mean 0)
+Now, we know something about $$\bar{q}$$ from earlier derivations. Do we know anything about the variance of $$\epsilon$$? 
+
+Remember, $$\mu_1$$ and $$\epsilon_{1,i}$$ come directly from $$X$$, and a row of $$X$$ comes from the corresponding row of the adjacency matrix $$A$$ which really is just our set of $$n$$ Bernoulli trials. So... the variance ought to make its way through in some form.
+
+### Rewrite in terms of original covariances (developed this in approach 1)
+Following these [two derivations for PCA from Towards Data Science](https://towardsdatascience.com/principal-component-analysis-part-1-the-different-formulations-6508f63a5553)
+
+We want to know the "variance of the projected data". In the sense that we are projecting each row of $$A$$ onto an eigenvector. For now let's not worry about the two groups, and just consider a single group with no offset $$\beta$$. So, start with row $$i$$ $$A_{i,\cdot}$$,  call it $$\vec{a}_i$$, and project onto the first eigenvector $$\vec{q_1}$$. Then $$\vec{x}_i = \frac{1}{\sqrt{\lambda_1}} \vec{a}_i \vec{q_1}$$. ...
+
+Eventually, we can get an expression for the variance of $$\vec{x}$$ in terms of the variance in the original space, which will look something like 
+$$\mathrm{Var}\left[X_{\cdot,1}\right] = \vec{q_1}^T S \vec{q_1}$$ where $$S$$ is the covariance matrix in the original space ... i.e. the space of our iid Bernoulli random variables. $$S$$ will be a symmetric $$n \times  n$$ matrix of covariances, so on the diagonal we will have $$\hat{\sigma}^2 \approx p(1-p)$$. The off diagonals will have expected value of 0 (i think). Then what is the expected value of $$\vec{q_1}^T S \vec{q_1}$$? If we multiply it out, for each column of $$S$$ we would have a sum with many components of $$\vec{q_1}$$ multiplied by a mean 0 value and a single component of $$\vec{q_1}$$ multiplied by the diagonal element which is $$p(1-p)$$. So then, the whole thing will end up being $$\vec{q_1}_i^2 \hat{\sigma}_i^2$$. But I think the expected value of $$\hat{\sigma}_i^2 = p(1-p)$$ times the length $$\|\vec{q_1}\|^2 = 1$$. Or something. Actually, $$E\left[S\right] = \mathrm{diag}\left(p(1-p)\right)$$, right??
+
+This might be a better derivation for the single block case (with no covariate) from part 1 above, since it might be able to express the variance in terms of the Bernoulli variance. But unfortunately I'm not sure if this can be applied to the case with a covariate, because in that case there are two different variances, with the first variance multiplied by a first chunk of the eigenvector and the second variance is multiplied by the second chunk. 
+
+### Symmetry constraints?
+Ok, here's an idea. In the adjacency matrix, a row in the top half generally looks like a row in the bottom half except that the left and right groups are swapped (at least for the case where the groups sizes are equal). But in terms of how many 1s are in the top left block and the bottom right block, they are about the same, and the same is true for the top right and bottom left. Thus, I think we can argue that the top half of the values in the eigenvector are statistically similar to the bottom half of the values. Because if you grab a row from the bottom, swap left and right halves, and multiply it by the eigenvector it ought to yield a value that looks like the top half of the eigenvector. So that maybe gives us a constraint on the values in the eigenvector... they should be pretty similar, perhaps having the same mean and variance?
+
+Interestingly, the squared norm of each half of the eigenvector is about the same proportion as the number of nodes in each group...
 
 ## References
 [^guionnet]: Guionnet, A. (2023). [Bernoulli Random Matrices.](https://ems.press/books/standalone/262/5172), also on arXiv [here](https://arxiv.org/abs/2112.05506)
