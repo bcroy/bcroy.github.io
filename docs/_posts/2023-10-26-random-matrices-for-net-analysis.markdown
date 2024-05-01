@@ -300,17 +300,23 @@ Recall that these are the elements of the product $$Q_i^T Q_i$$, where $$Q_i$$ a
 
 Using the properties of [points distributed on the unit sphere (discussed earlier)](#distribution-of-points-on-the-unit-sphere), we can see that
 
-$$\mathrm{E}\left[a_0\right] = \left[Q_0^T Q_0\right]_{(1,1)} = \|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$
+$$\mathrm{E}\left[a_0\right] = \mathrm{E}\left[\left[Q_0^T Q_0\right]_{(1,1)}\right] = \mathrm{E}\left[\|\vec{q}_1\|^2_{\left\{Z=0\right\}}\right] = \frac{n_0}{n}$$
 
-$$\mathrm{E}\left[c_0\right] = \left[Q_0^T Q_0\right]_{(2,2)} = \|\vec{q}_2\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$
+$$\mathrm{E}\left[c_0\right] = \mathrm{E}\left[\left[Q_0^T Q_0\right]_{(2,2)}\right] = \mathrm{E}\left[\|\vec{q}_2\|^2_{\left\{Z=0\right\}}\right] = \frac{n_0}{n}$$
 
-In words, $$a_0$$ and $$c_0$$ are Beta distributed random variables whose expected values are the squared norms of the first and second eigenvectors $$\vec{q}_1$$ and $$\vec{q}_2$$ over the subset of coordinates for cluster 0.
+In words, $$a_0$$ and $$c_0$$ correspond to the squared norms of the first and second eigenvectors $$\vec{q}_1$$ and $$\vec{q}_2$$ over the subset of coordinates for cluster 0. These are Beta distributed random variables, and their expected values are simply the fraction of coordinates corresponding to cluster 0.
 
-For $$b_0$$, things seem to be a little trickier, since $$b_0 = \left[Q_0^T Q_0\right]_{(1,2)}$$. This corresponds to the inner product $$\vec{q}_1^T \vec{q}_2$$, but only over the subset of coordinates for $$Z=0$$. Empirically, when $$\frac{n_0}{n} \approx \frac{1}{2}$$, $$b_0 \approx \frac{1}{2}$$. But I'm not sure how to prove this. I've thought about rotating $$\vec{q}$$ so that the subvector for cluster 1 is axis aligned along the first coordinate, but where does that rotation take the coefficients of $$\vec{q}_2$$? While $$\vec{q}_1$$ and $$\vec{q}_2$$ are orthogonal, their subvectors need not be (and indeed, they aren't).
+For $$b_0$$, things seem to be a little trickier, since $$\mathrm{E}\left[b_0\right] = \mathrm{E}\left[\left[Q_0^T Q_0\right]_{(1,2)}\right]$$, which corresponds to the inner product $$\vec{q}_1^T \vec{q}_2$$ restricted to the subset of coordinates for $$Z=0$$. By the Cauchy-Schwarz inequality, we can upper bound (the magnitude) of this value to obtain 
 
-One thing we can do is provide an upper bound on the absolute value of $$b_0$$. First, we know that for any vector $$\vec{x}$$ with norm constrained to $$\|\vec{x}\| = \|\vec{q}\|$$ has $$\vec{x}^T \vec{q} \leq \vec{q}^T\vec{q} = \|\vec{q}\|^2$$. Above, we claimed that the expected values of $$\|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \|\vec{q}_2\|^2_{\left\{Z=0\right\}}$$. And so we claim that $$b_0 \leq \|\vec{q}_1\|^2_{\left\{Z=0\right\}} = \frac{n_0}{n}$$. And by the same logic, $$b_1 \leq \|\vec{q}_1\|^2_{\left\{Z=1\right\}} = \frac{n_1}{n}$$. But furthermore, since $$b_0 + b_1 = 0$$ then 
-$$|b_0| \leq \min\left\{\frac{n_0}{n},\frac{n_1}{n} \right\}$$.
+$$\mathrm{E}\left[|b_0|\right] \leq \mathrm{E}\left[\|\vec{q}_1\|_{\left\{Z=0\right\}} \|\vec{q}_2\|_{\left\{Z=0\right\}}\right]  = \frac{n_0}{n}$$ 
 
+By the same logic, $$\mathrm{E}\left[|b_1|\right] \leq \frac{n_1}{n}$$ 
+for cluster 1. Furthermore, since $$b_0 + b_1 = 0$$, 
+then 
+
+$$|b_0| = |b_1| \leq \min\left\{\frac{n_0}{n},\frac{n_1}{n}\right\}$$
+
+Empirically, when $$\frac{n_0}{n} \approx \frac{1}{2}$$, $$b_0 \approx \frac{1}{2}$$. But so far I can only derive the upper bounds given above. I may try some more experiments to gain some intuition on the behavior of the subvectors and their inner products.
 
 In any case, we can see that covariance ellipses are governed (or at least constrained) as follows:
 
