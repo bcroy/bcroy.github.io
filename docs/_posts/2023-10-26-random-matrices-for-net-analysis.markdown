@@ -325,7 +325,7 @@ $$ where $$\sigma^2_{1,1} = \frac{\lambda_1}{n} - \left(p+\frac{\beta}{2}\right)
 
 __TODO__ -- It might be worth doing another experiment with unbalanced $$n_1$$ and $$n_2$$, since the covariance matrices should have interesting off-diagonal values.
 
-__Note:__ _I started an alternative derivation of the covariance parameters in [Appendix B](#appendix-cov-dev-early), but it's incomplete._
+__Note:__ _I started an alternative derivation of the covariance parameters in [Appendix B](#appendix-cov-dev-approach-2), but it's incomplete._
 
 ### Expected errors and cluster separation
 __TODO__
@@ -341,7 +341,7 @@ Up to this point, I have focused on the simple ER random graph and the ER random
 Questions:
 - Can we determine the eigenvalues of a block symmetric matrix? In this case, the overall adjacency matrix has a symmetric block structure, each of which is a simple Bernoulli random matrix. Füredi & Komlós[^furedi] tells us something about the eigenvalues of Bernoulli random matrices, but what about the concatenation of them? Or maybe we could set it up as the sum of block matrices, and then can we say something about its eigenvalues based on the eigenvalues of the constituents?
 
-## Appendix A - Covariance of a linear transformation of a random variable {#appendix-A}
+## Appendix A: Covariance of a linear transformation of a random variable {#appendix-A}
 Derivation of the covariance of a linear transformation. (Note, normally covariance is $$(X-\mu) (X-\mu)^T$$, here we are transposing it... but I should switch this around to be more standard)
 
 $$\begin{flalign*}
@@ -363,7 +363,7 @@ $$
 
 (_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
 
-## Appendix B: Covariance derivation, approach 2
+## Appendix B: Covariance derivation, approach 2 {#appendix-cov-dev-approach-2}
 
 _This are the beginnings of an alternative approach to deriving the covariance of the node embeddings. It may be advantageous in relating directly to the Bernoulli parameters._
 
