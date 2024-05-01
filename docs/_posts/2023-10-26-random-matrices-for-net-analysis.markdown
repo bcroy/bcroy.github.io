@@ -248,12 +248,7 @@ Suppose that $$\alpha_0 = \alpha_1 = \frac{1}{2}$$. Consider the first eigenvect
 
 ### Embedding ___covariances___ as $$\beta$$ varies
 
-Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate.
-
-#### Approach 1
-
-
-Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_0$$ be the $$n_0 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 0, and $$X_1$$ the $$n_1 \times d$$ sub-matrix for cluster 1, where $$n_0 + n_1 = n$$. 
+Since the node covariates are observable, we can isolate the covariances of the embedding vectors for each covariate. Recall that $$X$$ is an $$n \times d$$ matrix of embeddings. Let $$X_0$$ be the $$n_0 \times d$$ sub-matrix corresponding to the subset of embeddings for cluster 0, and $$X_1$$ the $$n_1 \times d$$ sub-matrix for cluster 1, where $$n_0 + n_1 = n$$. 
 
 We wish to know $$\mathrm{Cov}\left[X_0\right]$$. If we can figure that out, then we can understand the orientation and shapes of the ellipses. As above, 
 
@@ -330,7 +325,47 @@ $$ where $$\sigma^2_{1,1} = \frac{\lambda_1}{n} - \left(p+\frac{\beta}{2}\right)
 
 __TODO__ -- It might be worth doing another experiment with unbalanced $$n_1$$ and $$n_2$$, since the covariance matrices should have interesting off-diagonal values.
 
-#### Approach 2
+__Note:__ _I started an alternative derivation of the covariance parameters in [Appendix B](#appendix-cov-dev-early), but it's incomplete._
+
+### Expected errors and cluster separation
+__TODO__
+
+Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
+
+### Summary -- part 2
+We now have a characterization of the node embedding mean positions and well as their covariances. These relate to the model parameters $$n$$, $$p$$, and $$\beta$$, as well as $$n_0$$ (which, in our simpler presentation, was not included in the model.) That is, given the model parameters we have an expected mean and covariances for the node embeddings, which may be useful in inferring the expected distinguishability of the communities. More importantly, given an adjacency matrix $$A$$ we can compute node embeddings which can be used to infer $$p$$ and $$\beta$$, and we have a sense of the positions and shapes of the point clouds corresponding to the embeddings.
+
+## Conclusion
+Up to this point, I have focused on the simple ER random graph and the ER random graph with a single binary covariate. However, I have started on some work to show how this geometric interpretation can be applied to the stochastic block model. This is basically a "part 3" to this story -- see another draft writeup [here](http://bcroy.github.io/rdpgs/2023/06/12/mele-rdp.html#2-block-and-beyond-sbm-as-an-rdpg).
+
+Questions:
+- Can we determine the eigenvalues of a block symmetric matrix? In this case, the overall adjacency matrix has a symmetric block structure, each of which is a simple Bernoulli random matrix. Füredi & Komlós[^furedi] tells us something about the eigenvalues of Bernoulli random matrices, but what about the concatenation of them? Or maybe we could set it up as the sum of block matrices, and then can we say something about its eigenvalues based on the eigenvalues of the constituents?
+
+## Appendix A - Covariance of a linear transformation of a random variable {#appendix-A}
+Derivation of the covariance of a linear transformation. (Note, normally covariance is $$(X-\mu) (X-\mu)^T$$, here we are transposing it... but I should switch this around to be more standard)
+
+$$\begin{flalign*}
+&&& \mathrm{Cov}\left[ X_D\right] & \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( X_{D_i} - \overline{X_D}\right)^T \left( X_{D_i} - \overline{X_D}\right) \\
+
+& \mathrm{Cov}\left[ X_D\right] & \ = \ & \mathrm{Cov}\left[ A_D S\right] & \ = \ &
+\frac{1}{N_D} \sum_{i=1}^{N_D} \left( A_{D_i} S - \overline{A_D S}\right)^T
+    \left( A_{D_i} S - \overline{A_D S}\right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( S^T A_{D_i}^T - S^T\overline{A_D}^T\right) \left( A_{D_i} S - \overline{A_D} S \right) \\
+
+&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} S^T\left(A_{D_i} - \overline{A_D}\right)^T \left( A_{D_i} - \overline{A_D} \right) S \\
+
+&&&& \ = \ & S^T \mathrm{Cov}\left[A_D\right] S \\
+
+\end{flalign*}\notag
+
+$$
+
+(_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
+
+## Appendix B: Covariance derivation, approach 2
+
+_This are the beginnings of an alternative approach to deriving the covariance of the node embeddings. It may be advantageous in relating directly to the Bernoulli parameters._
 
 First, recall that 
 $$A = Q \Lambda Q^T$$, which we split as 
@@ -363,44 +398,7 @@ with zeros off the diagonal, the first $$n_0$$ diagonal elements having value $$
 
 __TO DO: go the rest of the way to get the parameters of the covariance ellipse for $$\mathrm{Cov}\left[X_0\right]$$__
 
-
-### Expected errors and cluster separation
-__TODO__
-
-Given the mean position vectors and the corresponding covariance matrices, I could then say something about the expected errors for downstream inference tasks, which would give a more complete picture of this network model.
-
-### Summary -- part 2
-foo
-
-## Conclusion
-Up to this point, I have focused on the simple ER random graph and the ER random graph with a single binary covariate. However, I have started on some work to show how this geometric interpretation can be applied to the stochastic block model. This is basically a "part 3" to this story -- see another draft writeup [here](http://bcroy.github.io/rdpgs/2023/06/12/mele-rdp.html#2-block-and-beyond-sbm-as-an-rdpg).
-
-Questions:
-- Can we determine the eigenvalues of a block symmetric matrix? In this case, the overall adjacency matrix has a symmetric block structure, each of which is a simple Bernoulli random matrix. Füredi & Komlós[^furedi] tells us something about the eigenvalues of Bernoulli random matrices, but what about the concatenation of them? Or maybe we could set it up as the sum of block matrices, and then can we say something about its eigenvalues based on the eigenvalues of the constituents?
-
-## Appendix A - Covariance of a linear transformation of a random variable {#appendix-A}
-Derivation of the covariance of a linear transformation. (Note, normally covariance is $$(X-\mu) (X-\mu)^T$$, here we are transposing it... but I should switch this around to be more standard)
-
-$$\begin{flalign*}
-&&& \mathrm{Cov}\left[ X_D\right] & \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( X_{D_i} - \overline{X_D}\right)^T \left( X_{D_i} - \overline{X_D}\right) \\
-
-& \mathrm{Cov}\left[ X_D\right] & \ = \ & \mathrm{Cov}\left[ A_D S\right] & \ = \ &
-\frac{1}{N_D} \sum_{i=1}^{N_D} \left( A_{D_i} S - \overline{A_D S}\right)^T
-    \left( A_{D_i} S - \overline{A_D S}\right) \\
-
-&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} \left( S^T A_{D_i}^T - S^T\overline{A_D}^T\right) \left( A_{D_i} S - \overline{A_D} S \right) \\
-
-&&&& \ = \ & \frac{1}{N_D} \sum_{i=1}^{N_D} S^T\left(A_{D_i} - \overline{A_D}\right)^T \left( A_{D_i} - \overline{A_D} \right) S \\
-
-&&&& \ = \ & S^T \mathrm{Cov}\left[A_D\right] S \\
-
-\end{flalign*}\notag
-
-$$
-
-(_Hmm... I should have known this or looked it up, there was no real need to derive -- the covariance of a linear transform of a random variable is a known thing, see this example on [StackExchange](https://stats.stackexchange.com/questions/113700/covariance-of-a-random-vector-after-a-linear-transformation)_)
-
-## Appendix B: Covariance derivation early ideas {#appendix-B}
+## Appendix C: Covariance derivation early ideas {#appendix-cov-dev-early}
 
 This is scratch work and ideas below... ignore for now. 
 
