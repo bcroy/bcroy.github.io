@@ -1,0 +1,56 @@
+---
+layout: post
+title:  "RDPG embedding of SBM networks"
+date:   2025-08-26 12:56:00 -0400
+categories: RDPGs
+---
+<script src="/assets/js/mathjax-config.js" defer></script>
+
+_You may have to refresh for the equation labels to display properly_
+
+* [this text is a placeholder, will be replaced with TOC by command below]
+{:toc}
+
+## Introduction
+I've been wrestling for awhile with the geometry of the embeddings of nodes in the random dot product graph formalism. In the random dot product graph, a node $$i$$ is associated with a latent position vector $$x_i$$, and the edge probability between nodes $$i$$ and $$j$$ is $$P_{ij} = \left<x_i,x_j\right>$$. 
+
+What I have been wanting to do is characterize the embeddings of nodes in such a graph. Let $$A$$ be the square $$n \times n$$ (hollow) symmetric binary adjacency matrix, where $$A_{ij} = A_{ji} = 1$$ if there is an edge between nodes $$i$$ and $$j$$, and zero otherwise. (Generally we assume that $$A$$ is "hollow" with no self-edges such that $$A_{ii} = 0$$.)
+
+We will be restricting our attention to the Stochastic Block Model (SBM). In the SBM, each node is a member of a block in $$\{1\dots k\}$$, and the probability of an edge between nodes is specified by their block memberships and associated block connectivity matrix $$B$$.
+
+Let $$Z \in \{0,1\}^{n \times k}$$, with one 1 per row, where $$Z_{ij} = 1$$ indicates node $$i$$ is in block $$j$$. Then, let $$M = ZBZ^T$$, an $n \time n$ matrix reflecting the (symmetric) edge probabilities between nodes. A specific realization of the graph adjacency matrix can be viewed as a sample $$A_{ij} \sim \mathrm{Bern}(M_{ij})$$ (again, restricting $$A$$ to be symmetric). Let $$D = Z^T Z = \mathrm{diag}(n_1 \dots n_k)$$ -- a diagonal matrix indicating the number of nodes in each block.
+
+We're interested in the "adjacency spectral embedding" of nodes in such a graph. The $$n \times d$$ adjacency spectral embedding matrix $$X$$ is obtained via the eigendecomposition of $$A = U \Lambda U^T$$, restricted to $$d \leq k$$ dimensions (in descending eigenvalue order), yielding $$\hat{X} = \hat{U} \lvert\hat{\Lambda}\rvert^{1/2}$$.
+
+We now define the operator $$Q := Z D^{-1/2}$$, and let $$S := Q^T M Q$$. (From the above definitions for $$Q$$ and $$D$$, it also follows that $$S = D^{1/2}BD^{1/2}$$.)
+
+
+We now show that the eigenvalues of $$S$$ correspond to the eigenvalues of $$M$$, and draw the connection between their corresponding eigenvectors. 
+
+### Lemma 1
+First, for any vector $$v \in \mathcal{R}^k$$, consider $$M\left(Qv\right)$$. Here, the action of $$Q$$ "lifts" $$v$$ into $$u = Qv, \ u \in \mathcal{R}^n$$. Substituting the definitions of $$M$$ and $$Q$$ we have 
+$$M(Qv) = \left(ZBZ^T\right)\left(\left(ZD^{-1/2}\right)v\right)$$. 
+Using the identities 
+$$D^{-1/2} D^{1/2} = I$$ and $$Z^T Z = D$$, and the definitions above of $$Q$$ and $$S$$, we obtain 
+$$M(Qv) = ZD^{-1/2}\left(D^{1/2}BD^{1/2}\right)v = Q(Sv)$$. Now, consider $$v$$ an eigenvector of $$S$$ with eigenvalue $$\lambda$$. Then, $$QSv = \lambda Qv = M(Qv)$$, implying $$\lambda$$ is also an eigenvalue of $$M$$ with eigenvector $$u = Qv$$.
+
+### Lemma 2
+We next show that the lifting operator $$Q$$ yields block constant vectors and preserves vector lengths. 
+
+First, vectors $$u = Qv$$ are block constant scalar multiples of $$v$$ since by construction the first $$n_1$$ rows of the first column of $$Q$$ have value $$1/\sqrt{n_1}$$, the next $$n_2$$ rows of the second column of $$Q$$ have value $$1/\sqrt{n_2}$$ and so on (up to $$k$$), with zeros everywhere else. Thus, for a row (node) $$i$$ in block $$a$$, $$u_j(i) = \left(v_j\right)_a / \sqrt{n_a}$$.
+
+For $$u = Qv, \ \lVert u \rVert = \lVert v \rVert$$ 
+since $$\lVert u \rVert^2 \ = \ \left<Qv,Qv\right> \ = \ v^T Q^T Q v \ = \ v^T
+\left(D^{-1/2} Z^T Z D^{-1/2} \right) v \ = \ v^T v = \lVert v \rVert^2$$. More generally, inner products are preserved such that $$\left<u,u\right> = \left<v,v\right>$$.
+
+
+### Lemma 3
+<!-- Minimal theorem set -->
+<!-- A — Minimal theorem / equation list (what to prove) -->
+
+Consider now the "population" node embeddings obtained via the eigendecomposition. This can be obtained from $$M$$, or from $$S$$ followed by a lifting operation. (Note that in practice, inference usually proceeds without either $$M$$ or $$S$$ but rather an observed adjacency matrix $$A$$, viewed as a sample of $$M$$.) We will proceed from the eigendecomposition of $$S = V \Lambda V^T$$, restricting to the largest $$d \leq k$$ eigenvalues. Now let $$\nu := V \lvert \Lambda \rvert^{1/2}$$ -- a $$k \times d$$ matrix. Then the $$d$$-dimensional embedding position vector for a node in block $$a$$ is $$x_a^\star = \nu_a/\sqrt{n_a}$$.
+
+Viewed another way, applying the lifting operator to obtain $$u_j := Q v_j$$ and collecting the top $$d$$ such vectors (by eigenvalue) yields $$U = \left[ u_1, \dots u_d \right]$$ and $$\Lambda = \mathrm{diag}\left(\lambda_1,\dots,\lambda_d\right)$$. Then, $$X^\star := U \lvert \Lambda \rvert^{1/2}$$.
+
+### Lemma 4
+We now turn to the geometry of the embedding position vectors and their relation to the block structure.
