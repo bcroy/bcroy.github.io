@@ -18,11 +18,11 @@ What I have been wanting to do is characterize the embeddings of nodes in such a
 
 We will be restricting our attention to the Stochastic Block Model (SBM). In the SBM, each node is a member of a block in $$\{1\dots k\}$$, and the probability of an edge between nodes is specified by their block memberships and associated block connectivity matrix $$B$$.
 
-Let $$Z \in \{0,1\}^{n \times k}$$, with one 1 per row, where $$Z_{ij} = 1$$ indicates node $$i$$ is in block $$j$$. Then, let $$M = ZBZ^T$$, an $n \time n$ matrix reflecting the (symmetric) edge probabilities between nodes. A specific realization of the graph adjacency matrix can be viewed as a sample $$A_{ij} \sim \mathrm{Bern}(M_{ij})$$ (again, restricting $$A$$ to be symmetric). Let $$D = Z^T Z = \mathrm{diag}(n_1 \dots n_k)$$ -- a diagonal matrix indicating the number of nodes in each block.
+Let $$Z \in \{0,1\}^{n \times k}$$, with one 1 per row, where $$Z_{ij} = 1$$ indicates node $$i$$ is in block $$j$$. Then, let $$M = ZBZ^T$$, an $$n \times n$$ matrix reflecting the (symmetric) edge probabilities between nodes. A specific realization of the graph adjacency matrix can be viewed as a sample $$A_{ij} \sim \mathrm{Bern}(M_{ij})$$ (again, restricting $$A$$ to be symmetric). Let $$D = Z^T Z = \mathrm{diag}(n_1 \dots n_k)$$ -- a diagonal matrix indicating the number of nodes in each block.
 
 We're interested in the "adjacency spectral embedding" of nodes in such a graph. The $$n \times d$$ adjacency spectral embedding matrix $$X$$ is obtained via the eigendecomposition of $$A = U \Lambda U^T$$, restricted to $$d \leq k$$ dimensions (in descending eigenvalue order), yielding $$\hat{X} = \hat{U} \lvert\hat{\Lambda}\rvert^{1/2}$$.
 
-We now define the operator $$Q := Z D^{-1/2}$$, and let $$S := Q^T M Q$$. (From the above definitions for $$Q$$ and $$D$$, it also follows that $$S = D^{1/2}BD^{1/2}$$.)
+Define the "lifting" operator $$Q := Z D^{-1/2}$$, and let $$S := Q^T M Q$$. (From the above definitions for $$Q$$ and $$D$$, it also follows that $$S = D^{1/2}BD^{1/2}$$.)
 
 
 We now show that the eigenvalues of $$S$$ correspond to the eigenvalues of $$M$$, and draw the connection between their corresponding eigenvectors. 
@@ -44,7 +44,7 @@ since $$\lVert u \rVert^2 \ = \ \left<Qv,Qv\right> \ = \ v^T Q^T Q v \ = \ v^T
 \left(D^{-1/2} Z^T Z D^{-1/2} \right) v \ = \ v^T v = \lVert v \rVert^2$$. More generally, inner products are preserved such that $$\left<u,u\right> = \left<v,v\right>$$.
 
 
-### Lemma 3
+### Lemma 3 -- Population ASE means (block centers)
 <!-- Minimal theorem set -->
 <!-- A — Minimal theorem / equation list (what to prove) -->
 
@@ -52,5 +52,87 @@ Consider now the "population" node embeddings obtained via the eigendecompositio
 
 Viewed another way, applying the lifting operator to obtain $$u_j := Q v_j$$ and collecting the top $$d$$ such vectors (by eigenvalue) yields $$U = \left[ u_1, \dots u_d \right]$$ and $$\Lambda = \mathrm{diag}\left(\lambda_1,\dots,\lambda_d\right)$$. Then, $$X^\star := U \lvert \Lambda \rvert^{1/2}$$.
 
-### Lemma 4
-We now turn to the geometry of the embedding position vectors and their relation to the block structure.
+An important fact about the node embedding positions $$x^\star_a$$ for block $$a$$ directly links to the block probability matrix $$B$$. That is, $$\langle x^\star_a, x^\star_b \rangle = \frac{1}{\sqrt{n_a}} \frac{1}{\sqrt{n_b}} \nu_a^T \nu_b = \frac{1}{\sqrt{n_a n_b}} (V\Lambda V^T)_{a,b} =\frac{1}{\sqrt{n_a n_b}} S_{a,b} = B_{a,b}$$. This shows that the inner products of (population) position vectors yields the block probability matrix $$B$$.
+
+### Lemma 4 -- block subvector inner products
+_But now I am not sure if this is a particularly relevant result?_
+
+We now discuss some properties of the block-restricted subvectors of the eigenvectors. Denote as $$u_{j,B_a}$$ the subset of coordinates of $$u_j$$ corresponding to block $$a$$. Then $$\langle u_{j,B_a},u_{l,B_a} \rangle$$ (i.e. the inner product of the subvectors of $$u_j$$ and $$u_l$$ restricted to block $$a$$) can be computed as follows. First, note that $$u_{j,B_a}$$ denotes the subset of rows of $$u_j$$ in block $$a$$, and recall that $$u_j = Qv_j = ZD^{-1/2}v_j$$. The lifting operator $$Q$$ scales the $$a$$th entry of $$v_j$$ by $$D_{a,a}^{-1/2}$$ and repeats it $$n_a$$ times. Therefore, $$u_{j,B_a}$$ is a vector with $$n_a$$ repetitions of the value $$\frac{1}{\sqrt{n_a}}\left(v_j\right)_a$$. As such, $$\langle u_{j,B_a},u_{l,B_a} \rangle = n_a \left(\frac{1}{\sqrt{n_a}}\left(v_j\right)_a\right) \left(\frac{1}{\sqrt{n_a}}\left(v_l\right)_a\right) = (v_j)_a (v_l)_a$$. 
+
+
+<!-- Just below the 
+"(what to prove)" stuff above, this is the "inference recipe":
+ Great — let’s turn this into a practical, rigorous inference recipe -->
+
+ <!-- Can you go through the delta method applied to \Sigma(x_a^\star)? -->
+
+ <!-- Also helpful:
+ 9) Practical estimation / alignment notes -->
+
+ <!-- Also helpful: ... actually this is a very good walkthrough:
+ Nice — let’s do a careful, step-by-step derivation of the block covariance you've seen before
+ -->
+
+## Covariance structure of embeddings
+
+
+
+## Other stuff
+
+ Question -- if we choose too large of a dimension (i.e. $$\hat{d} > d$$), maybe all the inner product stuff still works out well enough to recover $$B$$ since maybe the noise dimensions cancel?
+
+
+## Potential paper summary
+
+### Abstract / Introduction
+
+The random dot product graph (RDPG) \cite{young-scheinerman} is a graph (or network) representation that treats nodes as points embedded in a latent space, with the connectivity between nodes governed by the dot products between their latent node representations. This formulation supports elegant analyses and can be used to represent a variety of network classes, including the stochastic block model (SBM).\footnote{We focus on the subset of SBMs with positive semi-definite block matrices, though the generalized RDPG \cite{rubin-delanchey} can support SBMs with indefinite block matrices.} In this work, we examine several properties of random dot product representations of stochastic block models. In particular, we derive block-level covariance formulas for node embeddings, explore block separation diagnostics based on block center confidence ellipses, and show some useful properties for block inference. We present empirical simulation results to further explore and build on these properties, and to show how they can be used in practice.
+
+## Introduction
+
+The stochastic block model \cite{holland1983} is generative network model parameterized by a node block assignment matrix $$Z$$ and a block connectivity matrix $$B$$. For an SBM with $$n$$ nodes and $$k$$ blocks, $$Z$$ is an $$n \times k$$ matrix with $$Z_{ij} = 1$$ iff node $$i$$ in block $$j$$, with each node in exactly one block, and zero otherwise. $$B$$ is a $$k times k$$ symmetric block matrix that governs edge probabilities between nodes in blocks $$i$$ an $$j$$. This model generalizes the simpler  Erdos-Renyi random graph model \cite{erdos}, in which nodes are randomly connected to other nodes with probability $$p$$, but supports a natural notion of community structure through block membership.
+
+In the RDPG, we consider each node $$i$$ to have an associated $$d$$ dimensional latent position $$x_i$$ in $$\mathcal{R}^d$$, and the probability of an edge between nodes $$i$$ and $$j$$ as $$P_{ij} = \left<x_i, x_j\right>$$. Collecting these embedding (row) vectors together yields the $$n \times d$$ matrix $$X$$. The overall observed adjacency matrix $$A$$ can be viewed as a sample $$A \sim \mathrm{Bernoulli}P$$, with $$P = XX^T$$. This formulation naturally supports graph embeddings and inference via the eigendecompossition. First, supposing that $$P$$ were observed, taking its eigendecomposition $$P = U\Sigma U^T$$ and letting $$X' = U \Sigma^{1/2}$$, then $$P = X' X'^T$$ with $$X'$$ a rotation of $$X$$. In practice, given an {\it observed} adjacency matrix $$A$$, compute its eigendecomposition $$A = \hat{U}\hat{\Sigma} \hat{U}^T$$. Then, let $$\hat{X} = \hat{U} \hat{\Sigma}_d^{1/2}$$, taking only the $$d$$ largest eigenvalues. In this way, $$\hat{X} \hat{X}^T$$ both approximates $$A$$ (due to truncation at $$d$$) and, up to rotation, estimates $$X$$. \cite{athreya} discuss the RDPG formulation and embeddings in more detail, particuarly in sections 2.2 and 2.3.
+
+### Part 1
+In this work, we are interested in the geometry of the node embeddings -- the rows of $$X$$. We begin by considering the SBM model parameters $$B$$ and $$Z$$, and their link to the observed adjacency matrix $$A$$. 
+
+Let $$A \in \{0,1\}^{n \times n}$$ be the adjacency matrix of a $$k$$-block SBM with block sizes $$\left( n_1, n_2, \dots, n_k\right)$$, block probability matrix $$B \in \left[0,1\right]^{k \times k}$$, and community membership matrix $$Z \in \left\{0,1 \right\}^{n \times k}$$. Then,
+
+$$M = \mathbb{E}\left[A\right] = ZBZ^T$$
+
+Define $$D = \mathrm{diag}\left(n_1, \dots n_k \right)$$, and the block interaction matrix 
+
+$$S = D^{1/2} B D^{1/2}$$
+
+Briefly, $$S$$ expresses the expected number of edges between nodes within and across blocks, a kind of block-level summary of $$A$$. 
+
+Now, let $$S = V \Lambda V^T$$ be the eigendecomposition with orthonormal columns $$V = \left[v_1, \dots, v_k \right]$$, and eigenvalues $$\Lambda = \mathrm{diag}\left(\lambda_1, \dots \lambda_k \right)$$.  
+
+#### 1. Block mean embeddings: 
+Define the $$k \times d$$ matrix of population block mean embeddings
+
+$$\nu = D^{-1/2} V \Lambda^{1/2}$$
+
+Then the $$a$$th row of $$\nu$$, denoted as $$\nu_a^T$$, is a $$d$$ dimensional vector associated with block $$a$$.
+
+#### 2. Identities
+For all blocks $$a, b$$:
+
+$$\nu_a^T \nu_b = B_{ab}, \quad ||\nu_a||^2 = B_{aa}, \quad ||\nu_a - \nu_b||^2 = B_{aa} + B_{bb} - 2 B_{ab}$$
+
+These follow directly from the definition of $$S$$ and its eigendecomposition. Thus the rows of $$\nu$$ express the geometry of $$B$$, such as the embedding radius of each block (corresponding to within block edge probability), the inner products reflect the pairwise separation between blocks (correpsonding to edge probability between blocks), and the pairwise squared distances helping characterize separation between blocks.
+
+<!--  -- the embedding radius of each block, the inner products recover the block edge probabilities and their pairwise squared distances quantify the separation between blocks. -->
+
+#### 3. Connection to eigenvectors of $$M$$.
+
+The eigenpairs $$\left(\lambda_j, v_j\right)$$ of $$S$$ directly map to eigenpairs $$\left(\lambda_j, u_j\right)$$ of $$M$$ as follows. Let $$u_j = Z D^{-1/2} v_j$$ -- here, $$Z D^{-1/2}$$ is a "lifting" operation taking vectors in $$\mathcal{R}^k$$ to $$\mathcal{R}^n$$. This lifting operation scales each entry $$l$$ of $$v_j$$ by $$D^{-1/2}_{l,l}$$ and repeats it $$n_l$$ times, yielding a block constant vector $$u_j$$.
+
+Then using the identities $$Z^T Z = D$$ and $$D^{-1/2} D^{1/2} = I$$, we have 
+
+$$M u_j = (ZBZ^T) Z D^{-1/2} v_j = Z D^{-1/2}D^{1/2} B D^{1/2} v_j = Z D^{-1/2} S v_j = \lambda_j Z D^{-1/2} v_j = \lambda_j u_j$$.
+
+Thus the "lifting operator" links the eigenvectors of $$S$$ to those of $$M$$ with the same eigenvalues.
+
+Alternatively, and equivalently, each $$u_j$$ can be partitioned into $$k$$ subvectors corresponding to the blocks, with subvector $$a$$ equal to $$\frac{1}{\sqrt{n_a}}v_j\left(a\right)\mathbf{1}_{n_a}$$. With this mapping, the norms and inner products of these block subvectors agree with the identities above.
